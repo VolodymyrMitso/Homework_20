@@ -2,7 +2,11 @@ package mitso.v.homework_20;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,18 +21,30 @@ import mitso.v.homework_20.api.models.Currency;
 import mitso.v.homework_20.api.models.json.JsonCurrency;
 import mitso.v.homework_20.api.models.json.JsonData;
 import mitso.v.homework_20.api.models.json.JsonOrganization;
+import mitso.v.homework_20.recycler_view.BankAdapter;
+import mitso.v.homework_20.recycler_view.IBankHandler;
+import mitso.v.homework_20.recycler_view.SpacingDecoration;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IBankHandler {
 
     private final String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
 
-    private JsonData mJsonData;
-    private List<Bank> mBankList;
+    private JsonData        mJsonData;
+    private List<Bank>      mBankList;
+
+    private RecyclerView    mRecyclerView_Banks;
+    private BankAdapter     mBankAdapter;
+    private boolean         isHandlerSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(Html.fromHtml("<font color='#" +
+                    Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
+                    "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
 
         Api.getData(new IConnectCallback() {
             @Override
@@ -49,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(LOG_TAG, mBankList.get(0).toString());
                     Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
                 }
+
+                mRecyclerView_Banks = (RecyclerView) findViewById(R.id.rv_Banks_AM);
+                mBankAdapter = new BankAdapter(mBankList);
+                mRecyclerView_Banks.setAdapter(mBankAdapter);
+                mRecyclerView_Banks.setLayoutManager(new GridLayoutManager(MainActivity.this, 1));
+                int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
+                mRecyclerView_Banks.addItemDecoration(new SpacingDecoration(spacingInPixels));
+
+                mBankAdapter.setBankHandler(MainActivity.this);
+                isHandlerSet = true;
             }
 
             @Override
@@ -101,5 +127,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return banks;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (isHandlerSet)
+            mBankAdapter.releaseBankHandler();
+    }
+
+    @Override
+    public void goToLink() {
+        Toast.makeText(MainActivity.this, "LINK", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showOnMap() {
+        Toast.makeText(MainActivity.this, "MAP", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void callPhone() {
+        Toast.makeText(MainActivity.this, "PHONE", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showDetails() {
+        Toast.makeText(MainActivity.this, "DETAILS", Toast.LENGTH_SHORT).show();
     }
 }

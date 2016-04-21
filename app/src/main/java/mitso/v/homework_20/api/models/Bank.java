@@ -12,6 +12,22 @@ public class Bank {
     private String link;
     private List<Currency> currencies;
 
+    @Override
+    public String toString() {
+        String result = "----- BANK INFO\n" +
+                        "name = " + name + "\n" +
+                        "region = " + region + "\n" +
+                        "city = " + city + "\n" +
+                        "address = " + address + "\n" +
+                        "phone = " + phone + "\n" +
+                        "link = " + link + "\n" +
+                        "currencies = \n";
+        for (int i = 0; i < currencies.size(); i++)
+            result += currencies.get(i).toString();
+
+        return result;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -40,19 +56,31 @@ public class Bank {
         this.currencies = currencies;
     }
 
-    @Override
-    public String toString() {
-        String result = "----- BANK INFO\n" +
-                        "name = " + name + "\n" +
-                        "region = " + region + "\n" +
-                        "city = " + city + "\n" +
-                        "address = " + address + "\n" +
-                        "phone = " + phone + "\n" +
-                        "link = " + link + "\n" +
-                        "currencies = \n";
-        for (int i = 0; i < currencies.size(); i++)
-            result += currencies.get(i).toString();
+    public String getName() {
+        return name;
+    }
 
-        return result;
+    public String getRegion() {
+        return region;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public List<Currency> getCurrencies() {
+        return currencies;
     }
 }
