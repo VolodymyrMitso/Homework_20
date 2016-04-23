@@ -1,21 +1,20 @@
 package mitso.v.homework_20;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mitso.v.homework_20.api.Api;
-import mitso.v.homework_20.api.interfaces.IConnectCallback;
 import mitso.v.homework_20.api.models.Bank;
 import mitso.v.homework_20.api.models.Currency;
 import mitso.v.homework_20.api.models.json.JsonCurrency;
@@ -26,7 +25,7 @@ import mitso.v.homework_20.databse.GetDataTask;
 import mitso.v.homework_20.databse.SetDataTask;
 import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
-import mitso.v.homework_20.recycler_view.SpacingDecoration;
+import mitso.v.homework_20.service.MyAlarmReceiver;
 
 public class MainActivity extends AppCompatActivity implements IBankHandler {
 
@@ -53,51 +52,67 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                     Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
                     "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
 
-        Api.getData(new IConnectCallback() {
-            @Override
-            public void onSuccess(Object object) {
+//        Api.getData(new IConnectCallback() {
+//            @Override
+//            public void onSuccess(Object object) {
+//
+//                mJsonData = (JsonData) object;
+//
+////                Log.e(LOG_TAG, mJsonData.print_1());
+////                Log.e(LOG_TAG, mJsonData.print_2());
+////                Log.e(LOG_TAG, mJsonData.print_3());
+//
+////                Log.e(LOG_TAG, "onSuccess");
+//
+//                mBankList = getBanksFromData(mJsonData);
+//
+//                if (mBankList != null) {
+////                    Log.e(LOG_TAG, String.valueOf(mBankList.size()));
+////                    Log.e(LOG_TAG, mBankList.get(0).toString());
+////                    Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
+//                }
+//
+//                mRecyclerView_Banks = (RecyclerView) findViewById(R.id.rv_Banks_AM);
+//                mBankAdapter = new BankAdapter(mBankList);
+//                mRecyclerView_Banks.setAdapter(mBankAdapter);
+//                mRecyclerView_Banks.setLayoutManager(new GridLayoutManager(MainActivity.this, 1));
+//                int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
+//                mRecyclerView_Banks.addItemDecoration(new SpacingDecoration(spacingInPixels));
+//
+//                mBankAdapter.setBankHandler(MainActivity.this);
+//                isHandlerSet = true;
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//
+//                StringWriter errors = new StringWriter();
+//                throwable.printStackTrace(new PrintWriter(errors));
+//                Log.e(LOG_TAG, "onFailure");
+//                Log.e(LOG_TAG, errors.toString());
+//            }
+//        });
 
-                mJsonData = (JsonData) object;
-
-//                Log.e(LOG_TAG, mJsonData.print_1());
-//                Log.e(LOG_TAG, mJsonData.print_2());
-//                Log.e(LOG_TAG, mJsonData.print_3());
-
-//                Log.e(LOG_TAG, "onSuccess");
-
-                mBankList = getBanksFromData(mJsonData);
-
-                if (mBankList != null) {
-//                    Log.e(LOG_TAG, String.valueOf(mBankList.size()));
-//                    Log.e(LOG_TAG, mBankList.get(0).toString());
-//                    Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
-                }
-
-                mRecyclerView_Banks = (RecyclerView) findViewById(R.id.rv_Banks_AM);
-                mBankAdapter = new BankAdapter(mBankList);
-                mRecyclerView_Banks.setAdapter(mBankAdapter);
-                mRecyclerView_Banks.setLayoutManager(new GridLayoutManager(MainActivity.this, 1));
-                int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
-                mRecyclerView_Banks.addItemDecoration(new SpacingDecoration(spacingInPixels));
-
-                mBankAdapter.setBankHandler(MainActivity.this);
-                isHandlerSet = true;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-                StringWriter errors = new StringWriter();
-                throwable.printStackTrace(new PrintWriter(errors));
-                Log.e(LOG_TAG, "onFailure");
-                Log.e(LOG_TAG, errors.toString());
-            }
-        });
+        scheduleAlarm();
 
         mDatabaseHelper = new DatabaseHelper(MainActivity.this);
+    }
+
+    public void scheduleAlarm() {
+        // Construct an intent that will execute the AlarmReceiver
+        Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
+        // Create a PendingIntent to be triggered when the alarm goes off
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every 5 seconds
+
+        long firstMillis = System.currentTimeMillis(); // alarm is set right away
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, 60000, pIntent);
     }
 
     private ArrayList<Bank> getBanksFromData(JsonData jsonData) {
