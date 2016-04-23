@@ -144,4 +144,8 @@ public class JsonData implements Serializable, IModelResponse {
     public Map<String, String> getCities() {
         return cities;
     }
+
+    public Date getDate() {
+        return date;
+    }
 }

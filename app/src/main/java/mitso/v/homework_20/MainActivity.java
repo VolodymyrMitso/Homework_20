@@ -21,6 +21,9 @@ import mitso.v.homework_20.api.models.Currency;
 import mitso.v.homework_20.api.models.json.JsonCurrency;
 import mitso.v.homework_20.api.models.json.JsonData;
 import mitso.v.homework_20.api.models.json.JsonOrganization;
+import mitso.v.homework_20.databse.DatabaseHelper;
+import mitso.v.homework_20.databse.GetDataTask;
+import mitso.v.homework_20.databse.SetDataTask;
 import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
 import mitso.v.homework_20.recycler_view.SpacingDecoration;
@@ -35,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
     private RecyclerView    mRecyclerView_Banks;
     private BankAdapter     mBankAdapter;
     private boolean         isHandlerSet;
+
+    private DatabaseHelper mDatabaseHelper;
+
+    private List<Bank> result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +59,18 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
                 mJsonData = (JsonData) object;
 
-                Log.e(LOG_TAG, mJsonData.print_1());
-                Log.e(LOG_TAG, mJsonData.print_2());
-                Log.e(LOG_TAG, mJsonData.print_3());
+//                Log.e(LOG_TAG, mJsonData.print_1());
+//                Log.e(LOG_TAG, mJsonData.print_2());
+//                Log.e(LOG_TAG, mJsonData.print_3());
 
-                Log.e(LOG_TAG, "onSuccess");
+//                Log.e(LOG_TAG, "onSuccess");
 
                 mBankList = getBanksFromData(mJsonData);
 
                 if (mBankList != null) {
-                    Log.e(LOG_TAG, String.valueOf(mBankList.size()));
-                    Log.e(LOG_TAG, mBankList.get(0).toString());
-                    Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
+//                    Log.e(LOG_TAG, String.valueOf(mBankList.size()));
+//                    Log.e(LOG_TAG, mBankList.get(0).toString());
+//                    Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
                 }
 
                 mRecyclerView_Banks = (RecyclerView) findViewById(R.id.rv_Banks_AM);
@@ -75,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
                 mBankAdapter.setBankHandler(MainActivity.this);
                 isHandlerSet = true;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             }
 
             @Override
@@ -86,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                 Log.e(LOG_TAG, errors.toString());
             }
         });
+
+        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
     }
 
     private ArrayList<Bank> getBanksFromData(JsonData jsonData) {
@@ -122,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                 }
                 bank.setCurrencies(currencies);
 
+                bank.setDate(jsonData.getDate());
+
                 banks.add(bank);
             }
         }
@@ -139,12 +153,54 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
     @Override
     public void goToLink() {
-        Toast.makeText(MainActivity.this, "LINK", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "SET DATA", Toast.LENGTH_SHORT).show();
+
+        final List<Bank> banks = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            final Bank bank = new Bank();
+            bank.setName(String.valueOf(i));
+            banks.add(bank);
+        }
+
+        final SetDataTask setDataTask = new SetDataTask(mDatabaseHelper, banks);
+        setDataTask.setCallback(new SetDataTask.Callback() {
+            @Override
+            public void success() {
+                Log.e("SET_DATA_TASK_LOG_TAG", "SET DATA DONE.");
+                setDataTask.releaseCallback();
+            }
+
+            @Override
+            public void failure(Throwable _error) {
+                // TODO: handle this ...
+            }
+        });
+        setDataTask.execute();
     }
 
     @Override
     public void showOnMap() {
-        Toast.makeText(MainActivity.this, "MAP", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "GET DATA", Toast.LENGTH_SHORT).show();
+
+        final GetDataTask getDataTask = new GetDataTask(mDatabaseHelper);
+        getDataTask.setCallback(new GetDataTask.Callback() {
+            @Override
+            public void success(List<Bank> _result) {
+                result = _result;
+
+                Log.e("GET_DATA_TASK_LOG_TAG", "GET DATA DONE.");
+
+                Log.e("SQLITE_DATABASE_LOG_TAG", result.get(0).toString());
+                Log.e("SQLITE_DATABASE_LOG_TAG", result.get(result.size() - 1).toString());
+                getDataTask.releaseCallback();
+            }
+
+            @Override
+            public void failure(Throwable _error) {
+                // TODO: handle this ...
+            }
+        });
+        getDataTask.execute();
     }
 
     @Override
