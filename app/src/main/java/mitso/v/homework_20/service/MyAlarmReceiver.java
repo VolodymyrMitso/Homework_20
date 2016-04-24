@@ -7,13 +7,11 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 public class MyAlarmReceiver extends WakefulBroadcastReceiver {
 
     public static final int REQUEST_CODE = 789;
-    public static final String ACTION = "ALARM";
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         Intent i = new Intent(context, MyTestService.class);
-        i.putExtra("xxx", "ZZZ");
         startWakefulService(context, i);
     }
 }

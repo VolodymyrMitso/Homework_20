@@ -1,6 +1,9 @@
 package mitso.v.homework_20;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ import mitso.v.homework_20.databse.SetDataTask;
 import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
 import mitso.v.homework_20.recycler_view.SpacingDecoration;
+import mitso.v.homework_20.service.MyAlarmReceiver;
 
 public class MainActivity extends AppCompatActivity implements IBankHandler {
 
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
             }
         }
 
-//        scheduleAlarm();
+        scheduleAlarm();
     }
 
     private boolean checkConnection(Context context) {
@@ -99,14 +103,14 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
         return ((wifiInfo != null && wifiInfo.isConnected()) || (networkInfo != null && networkInfo.isConnected()));
     }
 
-//    public void scheduleAlarm() {
-//
-//        final Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
-//        final PendingIntent pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 60000, pIntent);
-//    }
+    public void scheduleAlarm() {
+
+        final Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+    }
 
     private void apiGetData() {
 
@@ -130,7 +134,13 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                     Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
                 }
 
-                initRecyclerView();
+                try {
+                    initRecyclerView();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+//                initRecyclerView();
                 setData();
             }
 
