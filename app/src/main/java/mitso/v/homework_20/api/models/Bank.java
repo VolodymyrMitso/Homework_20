@@ -1,5 +1,6 @@
 package mitso.v.homework_20.api.models;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -14,9 +15,6 @@ public class Bank {
     private List<Currency> currencies;
     private Date date;
 
-    //        SimpleDateFormat simpleDateFormatOut = new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss");
-    //        String dateString = simpleDateFormatOut.format(jsonData.getDate());
-
     @Override
     public String toString() {
         String result = "----- BANK INFO\n" +
@@ -27,9 +25,9 @@ public class Bank {
                         "phone = " + phone + "\n" +
                         "link = " + link + "\n" +
                         "currencies = \n";
-//        for (int i = 0; i < currencies.size(); i++)
-//            result += currencies.get(i).toString();
-//        result += "date = " + new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(date);
+        for (int i = 0; i < currencies.size(); i++)
+            result += currencies.get(i).toString();
+        result += "date = " + new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(date);
 
         return result;
     }
