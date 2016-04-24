@@ -1,7 +1,6 @@
 package mitso.v.homework_20;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -43,9 +42,7 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
     private BankAdapter     mBankAdapter;
     private boolean         isHandlerSet;
 
-    private DatabaseHelper mDatabaseHelper;
-
-    private List<Bank> result;
+    private DatabaseHelper  mDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,60 +56,47 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
         mDatabaseHelper = new DatabaseHelper(MainActivity.this);
 
-
         if (mDatabaseHelper.checkIfDatabaseExists(this)) {
 
-            Toast.makeText(MainActivity.this, "DATABASE EXIST.", Toast.LENGTH_SHORT).show();
+            Log.e(LOG_TAG, "DATABASE EXIST.");
 
             if (checkConnection(this)) {
 
-                Toast.makeText(MainActivity.this, "YES CONNECTION.", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
 
             } else {
 
-                Toast.makeText(MainActivity.this, "NO CONNECTION.", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "CONNECTION - NO.");
                 getData();
             }
 
         } else {
 
-            Toast.makeText(MainActivity.this, "DATABASE NOT EXIST.", Toast.LENGTH_SHORT).show();
+            Log.e(LOG_TAG, "DATABASE NOT EXIST.");
 
             if (checkConnection(this)) {
 
-                Toast.makeText(MainActivity.this, "YES CONNECTION.", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
 
             } else {
 
-                Toast.makeText(MainActivity.this, "NO CONNECTION.", Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this, "APP NEED WI-FI. SORRY. BYE-BYE.", Toast.LENGTH_SHORT).show();
+                Log.e(LOG_TAG, "CONNECTION - NO.");
+                Toast.makeText(MainActivity.this, "APP NEED WI-FI FOR FIRST RUN.\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
                 finish();
             }
         }
 
 //        scheduleAlarm();
-
-
     }
 
     private boolean checkConnection(Context context) {
 
-        final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         final NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         final NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return ((wifiInfo != null && wifiInfo.isConnected()) || (networkInfo != null && networkInfo.isConnected()));
-    }
-
-    private boolean isAppRunningFirstTime() {
-
-        final SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        if (sharedPreferences.getBoolean("first_run", true)) {
-            sharedPreferences.edit().putBoolean("first_run", false).apply();
-            return true;
-        } else
-            return false;
     }
 
 //    public void scheduleAlarm() {
@@ -130,13 +114,13 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
             @Override
             public void onSuccess(Object object) {
 
+                Log.e(LOG_TAG, "onSuccess");
+
                 mJsonData = (JsonData) object;
 
                 Log.e(LOG_TAG, mJsonData.print_1());
                 Log.e(LOG_TAG, mJsonData.print_2());
                 Log.e(LOG_TAG, mJsonData.print_3());
-
-                Log.e(LOG_TAG, "onSuccess");
 
                 mBankList = getBanksFromData(mJsonData);
 
@@ -227,26 +211,11 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
     private void setData() {
 
-//        ArrayList<Bank> bankArrayList = new ArrayList<>();
-//        for (int i = 0; i < 1000; i++) {
-//            Bank bank = new Bank();
-//            bank.setAddress(" ----- " + String.valueOf(i) + " ----- ");
-//            bankArrayList.add(bank);
-//        }
-
         final SetDataTask setDataTask = new SetDataTask(this, mDatabaseHelper, mBankList);
         setDataTask.setCallback(new SetDataTask.Callback() {
             @Override
             public void success() {
-                Log.e("SET_DATA_TASK_LOG_TAG", "SET DATA DONE.");
-
-
-
-
-
-
-
-
+                Log.e(setDataTask.LOG_TAG, "SET DATA DONE.");
 
                 setDataTask.releaseCallback();
             }
@@ -269,10 +238,10 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
                 initRecyclerView();
 
-                Log.e("GET_DATA_TASK_LOG_TAG", "GET DATA DONE.");
+                Log.e(getDataTask.LOG_TAG, "GET DATA DONE.");
 
-                Log.e("GET_DATA_TASK_LOG_TAG", mBankList.get(0).toString());
-                Log.e("GET_DATA_TASK_LOG_TAG", mBankList.get(mBankList.size() - 1).toString());
+                Log.e(getDataTask.LOG_TAG, mBankList.get(0).toString());
+                Log.e(getDataTask.LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
 
                 getDataTask.releaseCallback();
             }
@@ -287,21 +256,12 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
     @Override
     public void goToLink() {
-        Toast.makeText(MainActivity.this, "SET DATA", Toast.LENGTH_SHORT).show();
-
-        final List<Bank> banks = new ArrayList<>();
-        for (int i = 0; i < 10000; i++) {
-            final Bank bank = new Bank();
-            bank.setName(String.valueOf(i));
-            banks.add(bank);
-        }
+        Toast.makeText(MainActivity.this, "GO TO LINK", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showOnMap() {
-        Toast.makeText(MainActivity.this, "GET DATA", Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(MainActivity.this, "SHOW ON MAP", Toast.LENGTH_SHORT).show();
     }
 
     @Override

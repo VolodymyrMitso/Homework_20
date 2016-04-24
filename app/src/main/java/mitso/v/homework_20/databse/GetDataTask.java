@@ -13,6 +13,8 @@ import mitso.v.homework_20.api.models.Bank;
 
 public class GetDataTask extends AsyncTask<Void, Void, List<Bank>> {
 
+    public String LOG_TAG = "GET_DATA_TASK_LOG_TAG";
+
     public interface Callback{
         void success(List<Bank> _result);
         void failure(Throwable _error);

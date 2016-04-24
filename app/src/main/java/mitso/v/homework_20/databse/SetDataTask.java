@@ -16,6 +16,8 @@ import mitso.v.homework_20.api.models.Bank;
 
 public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
+    public String LOG_TAG = "SET_DATA_TASK_LOG_TAG";
+
     public interface Callback{
         void success();
         void failure(Throwable _error);
@@ -45,48 +47,39 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         try {
-
             if (mDatabaseHelper.checkIfDatabaseExists(mContext)) {
 
                 SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
-
-                String[] projection = {
-                        DatabaseHelper.COLUMN_BANKS
-                };
-
-                Cursor cursor = db.query(DatabaseHelper.DATABASE_TABLE, projection,
+                Cursor cursor = db.query(DatabaseHelper.DATABASE_TABLE,
+                        new String[] {DatabaseHelper.COLUMN_BANKS},
                         null, null, null, null, null);
 
                 if (cursor.moveToNext()) {
+                    String databaseBankString = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BANKS));
+                    Bank databaseBank = new Gson().fromJson(databaseBankString, Bank.class);
 
-                    String bankString = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BANKS));
+                    Log.e(LOG_TAG, databaseBank.toString());
 
-                    Bank bank = new Gson().fromJson(bankString, Bank.class);
+                    Date databaseDate = databaseBank.getDate();
+                    Date apiDate = mBankList.get(0).getDate();
 
-                    Log.e("SET_DATA_TASK_LOG_TAG", bank.toString());
-
-                    Date oldDate = bank.getDate();
-
-                    Date newDate = mBankList.get(0).getDate();
-
-                    if (newDate.after(oldDate)) {
-                        Log.e("SET_DATA_TASK_LOG_TASK", "NEW DATE IS AFTER OLD DATE");
+                    if (apiDate.after(databaseDate)) {
+                        Log.e(LOG_TAG, "API DATE IS AFTER DATABASE DATE.");
 
                         db.execSQL("delete from " + DatabaseHelper.DATABASE_TABLE);
 
                         for (int i = 0; i < mBankList.size(); i++) {
 
-                            Bank newBank = mBankList.get(i);
-
-                            String newBankString = new Gson().toJson(newBank);
+                            Bank apiBank = mBankList.get(i);
+                            String apiBankString = new Gson().toJson(apiBank);
 
                             ContentValues values = new ContentValues();
-                            values.put(DatabaseHelper.COLUMN_BANKS, newBankString);
+                            values.put(DatabaseHelper.COLUMN_BANKS, apiBankString);
 
                             db.insert(DatabaseHelper.DATABASE_TABLE, null, values);
                         }
                     } else {
-                        Log.e("SET_DATA_TASK_LOG_TAG", "NEW DATE IS NOT AFTER OLD DATE");
+                        Log.e(LOG_TAG, "API DATE IS NOT AFTER DATABASE DATE.");
                     }
                 }
 
@@ -94,20 +87,19 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
             } else {
 
-                Log.e("SET_DATA_TASK_LOG_TAG", "CREATING DB FIRST TIME");
+                Log.e(LOG_TAG, "CREATING DATABASE FIRST TIME.");
 
                 SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 
-                db.execSQL("delete from " + DatabaseHelper.DATABASE_TABLE);
+//                db.execSQL("delete from " + DatabaseHelper.DATABASE_TABLE);
 
                 for (int i = 0; i < mBankList.size(); i++) {
 
-                    Bank bank = mBankList.get(i);
-
-                    String bankString = new Gson().toJson(bank);
+                    Bank apiBank = mBankList.get(i);
+                    String apiBankString = new Gson().toJson(apiBank);
 
                     ContentValues values = new ContentValues();
-                    values.put(DatabaseHelper.COLUMN_BANKS, bankString);
+                    values.put(DatabaseHelper.COLUMN_BANKS, apiBankString);
 
                     db.insert(DatabaseHelper.DATABASE_TABLE, null, values);
                 }

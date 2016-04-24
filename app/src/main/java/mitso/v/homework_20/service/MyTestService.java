@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 public class MyTestService extends IntentService {
 
+    private final String LOG_TAG = "MY_TEST_SERVICE_LOG_TAG";
+
     public MyTestService() {
         super("MyTestService");
     }
@@ -18,7 +20,7 @@ public class MyTestService extends IntentService {
 
         String string = intent.getStringExtra("xxx");
 
-        Log.e("MY_TEST_SERVICE_LOG_TAG", "service running ... " + string);
+        Log.e(LOG_TAG, "service running ... " + string);
 
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
