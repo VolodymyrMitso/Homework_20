@@ -24,10 +24,10 @@ public class Bank {
                         "address = " + address + "\n" +
                         "phone = " + phone + "\n" +
                         "link = " + link + "\n" +
+                        "date = " + new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(date) +
                         "currencies = \n";
         for (int i = 0; i < currencies.size(); i++)
             result += currencies.get(i).toString();
-        result += "date = " + new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(date);
 
         return result;
     }

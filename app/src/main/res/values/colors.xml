@@ -6,10 +6,12 @@
 
     <color name="colorAccent">#000000</color>
     
-    <color name="c_text_bg_color">#ffffff</color>
-    <color name="c_title_color">#242e33</color>
-    <color name="c_subtitle_color">#33454a</color>
-    <color name="c_text_color">#495d69</color>
-    <color name="c_btn_bg_color">#afbfc4</color>
+    <color name="c_rv_bg">#ededed</color>
+
+    <color name="c_text_bg">#ffffff</color>
+    <color name="c_title">#242e33</color>
+    <color name="c_subtitle">#33454a</color>
+    <color name="c_text">#495d69</color>
+    <color name="c_btn_bg">#afbfc4</color>
 
 </resources>

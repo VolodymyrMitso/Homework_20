@@ -19,7 +19,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/c_text_bg_color"
+                android:background="@color/c_text_bg"
                 android:orientation="vertical"
                 android:padding="17dp">
 
@@ -27,7 +27,7 @@
                     android:id="@+id/tv_BankName_BC"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/c_title_color"
+                    android:textColor="@color/c_title"
                     android:textSize="21sp"
                     tools:text="Альфа Банк" />
 
@@ -35,7 +35,7 @@
                     android:id="@+id/tv_BankRegion_BC"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/c_subtitle_color"
+                    android:textColor="@color/c_subtitle"
                     android:textSize="16sp"
                     tools:text="Закарпатская область" />
 
@@ -43,7 +43,7 @@
                     android:id="@+id/tv_BankCity_BC"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/c_subtitle_color"
+                    android:textColor="@color/c_subtitle"
                     android:textSize="16sp"
                     tools:text="Ужгород" />
 
@@ -52,7 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:textColor="@color/c_text_color"
+                    android:textColor="@color/c_text"
                     android:textSize="13sp"
                     tools:text="Тел. : 044 92 816 25" />
 
@@ -61,7 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:textColor="@color/c_text_color"
+                    android:textColor="@color/c_text"
                     android:textSize="13sp"
                     tools:text="Адрес : ул. Десятичная, 20" />
 
@@ -70,7 +70,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/c_btn_bg_color"
+                android:background="@color/c_btn_bg"
                 android:gravity="center_vertical"
                 android:padding="10dp">
 
@@ -79,7 +79,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/c_btn_bg_color"
+                    android:background="@color/c_btn_bg"
                     android:src="@drawable/ic_main_link" />
 
                 <ImageButton
@@ -87,7 +87,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/c_btn_bg_color"
+                    android:background="@color/c_btn_bg"
                     android:src="@drawable/ic_main_map" />
 
                 <ImageButton
@@ -95,7 +95,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/c_btn_bg_color"
+                    android:background="@color/c_btn_bg"
                     android:src="@drawable/ic_main_phone" />
 
                 <ImageButton
@@ -103,7 +103,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/c_btn_bg_color"
+                    android:background="@color/c_btn_bg"
                     android:src="@drawable/ic_main_details" />
 
             </LinearLayout>

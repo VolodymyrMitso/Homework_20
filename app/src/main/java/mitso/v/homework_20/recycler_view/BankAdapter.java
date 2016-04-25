@@ -11,7 +11,7 @@ import java.util.List;
 import mitso.v.homework_20.R;
 import mitso.v.homework_20.api.models.Bank;
 
-public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> implements View.OnClickListener {
+public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
 
     private List<Bank>      mBankList;
     private IBankHandler    mBankHandler;
@@ -27,7 +27,7 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> implements
     }
 
     @Override
-    public void onBindViewHolder(BankViewHolder holder, int position) {
+    public void onBindViewHolder(BankViewHolder holder, final int position) {
 
         final Bank bank = mBankList.get(position);
 
@@ -37,28 +37,33 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> implements
         holder.getTextView_BankPhone().setText(bank.getPhone());
         holder.getTextView_BankAddress().setText(bank.getAddress());
 
-        holder.getImageButton_Link().setOnClickListener(this);
-        holder.getImageButton_Map().setOnClickListener(this);
-        holder.getImageButton_Phone().setOnClickListener(this);
-        holder.getImageButton_Details().setOnClickListener(this);
-    }
+        holder.getImageButton_Link().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBankHandler.goToLink(bank.getLink());
+            }
+        });
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_Link_BC:
-                mBankHandler.goToLink();
-                break;
-            case R.id.btn_Map_BC:
-                mBankHandler.showOnMap();
-                break;
-            case R.id.btn_Phone_BC:
-                mBankHandler.callPhone();
-                break;
-            case R.id.btn_Details_BC:
+        holder.getImageButton_Map().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBankHandler.showOnMap(bank.getRegion(), bank.getCity(), bank.getAddress());
+            }
+        });
+
+        holder.getImageButton_Phone().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBankHandler.callPhone(bank.getPhone());
+            }
+        });
+
+        holder.getImageButton_Details().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 mBankHandler.showDetails();
-                break;
-        }
+            }
+        });
     }
 
     @Override
@@ -66,7 +71,7 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> implements
         return mBankList.size();
     }
 
-    ////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     public void setModels(List<Bank> _bankList) {
         mBankList = new ArrayList<>(_bankList);
@@ -123,7 +128,7 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> implements
         }
     }
 
-    ////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     public void setBankHandler(IBankHandler bankHandler) {
         this.mBankHandler = bankHandler;

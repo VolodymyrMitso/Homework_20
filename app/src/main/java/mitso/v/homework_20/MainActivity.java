@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
@@ -57,14 +58,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+
+        setContentView(R.layout.main_activity);
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(Html.fromHtml("<font color='#" +
                     Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
                     "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
 
-        scheduleAlarm();
+//        scheduleAlarm();
 
         mSupport = new Support();
 
@@ -121,9 +123,9 @@ public class MainActivity extends AppCompatActivity
 
                 mJsonData = (JsonData) object;
 
-                Log.e(LOG_TAG, mJsonData.print_1());
-                Log.e(LOG_TAG, mJsonData.print_2());
-                Log.e(LOG_TAG, mJsonData.print_3());
+//                Log.e(LOG_TAG, mJsonData.print_1());
+//                Log.e(LOG_TAG, mJsonData.print_2());
+//                Log.e(LOG_TAG, mJsonData.print_3());
 
                 mBankList = mSupport.getBanksFromData(mJsonData);
 
@@ -135,6 +137,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (!isRecyclerViewCreated)
                     initRecyclerView();
+
                 setData();
             }
 
@@ -186,6 +189,7 @@ public class MainActivity extends AppCompatActivity
         mBankAdapter.setBankHandler(this);
         isRecyclerViewCreated = true;
         isHandlerSet = true;
+        Log.e(LOG_TAG, "HANDLER IS SET ON");
     }
 
     @Override
@@ -235,8 +239,30 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
 
-        if (isHandlerSet)
-            mBankAdapter.releaseBankHandler();
+        try {
+            if (isHandlerSet) {
+                mBankAdapter.releaseBankHandler();
+                isHandlerSet = false;
+                Log.e(LOG_TAG, "HANDLER IS SET OFF");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            if (!isHandlerSet) {
+                mBankAdapter.setBankHandler(this);
+                isHandlerSet = true;
+                Log.e(LOG_TAG, "HANDLER IS SET ON");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setData() {
@@ -291,22 +317,39 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void goToLink() {
-        Toast.makeText(MainActivity.this, "GO TO LINK", Toast.LENGTH_SHORT).show();
+    public void goToLink(String _link) {
+        Toast.makeText(MainActivity.this, _link, Toast.LENGTH_SHORT).show();
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(_link));
+
+        if (browserIntent.resolveActivity(getPackageManager()) != null)
+            startActivity(Intent.createChooser(browserIntent, "Choose browser:"));
     }
 
     @Override
-    public void showOnMap() {
-        Toast.makeText(MainActivity.this, "SHOW ON MAP", Toast.LENGTH_SHORT).show();
+    public void showOnMap(String _region, String _city, String _address) {
+
+        Intent addressIntent = new Intent(Intent.ACTION_VIEW,Uri.parse("geo:0,0?q=" + _region + ", " + _city + ", " + _address));
+
+        if (addressIntent.resolveActivity(getPackageManager()) != null)
+            startActivity(Intent.createChooser(addressIntent, "Choose program to show on map:"));
+        else
+            Toast.makeText(MainActivity.this, "You have no maps program", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void callPhone() {
-        Toast.makeText(MainActivity.this, "PHONE", Toast.LENGTH_SHORT).show();
+    public void callPhone(String _phone) {
+        Toast.makeText(MainActivity.this, _phone, Toast.LENGTH_SHORT).show();
+
+        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:+38" + _phone));
+
+        if (callIntent.resolveActivity(getPackageManager()) != null)
+            startActivity(Intent.createChooser(callIntent, "Choose how to call:"));
     }
 
     @Override
     public void showDetails() {
-        Toast.makeText(MainActivity.this, "DETAILS", Toast.LENGTH_SHORT).show();
+
     }
+
 }
