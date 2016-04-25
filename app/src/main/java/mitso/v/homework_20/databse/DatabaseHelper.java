@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "banks_database";
+    public static final String DATABASE_NAME = "banks_database";
     private static final int DATABASE_VERSION = 1;
 
     public static final String DATABASE_TABLE = "banks_table";
@@ -31,10 +31,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    public boolean checkIfDatabaseExists(Context context) {
-
-        return (context.getDatabasePath(DATABASE_NAME).exists());
     }
 }

@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import java.util.Date;
 import java.util.List;
 
+import mitso.v.homework_20.Support;
 import mitso.v.homework_20.api.models.Bank;
 
 public class SetDataTask extends AsyncTask<Void, Void, Void> {
@@ -47,7 +48,7 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         try {
-            if (mDatabaseHelper.checkIfDatabaseExists(mContext)) {
+            if (new Support().checkIfDatabaseExists(mContext)) {
 
                 SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
                 Cursor cursor = db.query(DatabaseHelper.DATABASE_TABLE,

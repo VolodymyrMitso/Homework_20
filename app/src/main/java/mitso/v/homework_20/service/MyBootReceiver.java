@@ -17,7 +17,7 @@ public class MyBootReceiver extends WakefulBroadcastReceiver {
             final PendingIntent alarmRendingIntent = PendingIntent.getBroadcast(context, MyAlarmReceiver.REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, AlarmManager.INTERVAL_HALF_HOUR, alarmRendingIntent);
+            alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, 60000, alarmRendingIntent);
         }
     }
 }

@@ -4,9 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,17 +16,12 @@ import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import mitso.v.homework_20.api.Api;
 import mitso.v.homework_20.api.interfaces.IConnectCallback;
 import mitso.v.homework_20.api.models.Bank;
-import mitso.v.homework_20.api.models.Currency;
-import mitso.v.homework_20.api.models.json.JsonCurrency;
 import mitso.v.homework_20.api.models.json.JsonData;
-import mitso.v.homework_20.api.models.json.JsonOrganization;
 import mitso.v.homework_20.databse.DatabaseHelper;
 import mitso.v.homework_20.databse.GetDataTask;
 import mitso.v.homework_20.databse.SetDataTask;
@@ -42,11 +37,15 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
     private JsonData        mJsonData;
     private List<Bank>      mBankList;
 
-    private RecyclerView    mRecyclerView_Banks;
-    private BankAdapter     mBankAdapter;
-    private boolean         isHandlerSet;
+    private RecyclerView        mRecyclerView;
+    private SwipeRefreshLayout  mRefreshLayout;
+    private BankAdapter         mBankAdapter;
+    private boolean             isRecyclerViewCreated;
+    private boolean             isHandlerSet;
 
     private DatabaseHelper  mDatabaseHelper;
+
+    private Support mSupport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +57,15 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                     Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
                     "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
 
-        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
+        scheduleAlarm();
 
-        if (mDatabaseHelper.checkIfDatabaseExists(this)) {
+        mSupport = new Support();
+
+        if (mSupport.checkIfDatabaseExists(this)) {
 
             Log.e(LOG_TAG, "DATABASE EXIST.");
 
-            if (checkConnection(this)) {
+            if (mSupport.checkConnection(this)) {
 
                 Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
             Log.e(LOG_TAG, "DATABASE NOT EXIST.");
 
-            if (checkConnection(this)) {
+            if (mSupport.checkConnection(this)) {
 
                 Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
@@ -91,16 +92,6 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                 finish();
             }
         }
-
-        scheduleAlarm();
-    }
-
-    private boolean checkConnection(Context context) {
-
-        final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        final NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        final NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        return ((wifiInfo != null && wifiInfo.isConnected()) || (networkInfo != null && networkInfo.isConnected()));
     }
 
     public void scheduleAlarm() {
@@ -109,8 +100,9 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
         final PendingIntent pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, 60000, pIntent);
     }
+
 
     private void apiGetData() {
 
@@ -126,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                 Log.e(LOG_TAG, mJsonData.print_2());
                 Log.e(LOG_TAG, mJsonData.print_3());
 
-                mBankList = getBanksFromData(mJsonData);
+                mBankList = mSupport.getBanksFromData(mJsonData);
 
                 if (mBankList != null) {
                     Log.e(LOG_TAG, String.valueOf(mBankList.size()));
@@ -134,13 +126,8 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                     Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
                 }
 
-                try {
+                if (!isRecyclerViewCreated)
                     initRecyclerView();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-//                initRecyclerView();
                 setData();
             }
 
@@ -155,59 +142,42 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
         });
     }
 
-    private ArrayList<Bank> getBanksFromData(JsonData jsonData) {
-
-        ArrayList<Bank> banks = new ArrayList<>();
-
-        if (jsonData != null) {
-
-            List<JsonOrganization> jsonOrganizations = jsonData.getOrganizations();
-            Map<String, String> currenciesNamesAbbreviations = jsonData.getCurrencies();
-            Map<String, String> regionsNamesIds = jsonData.getRegions();
-            Map<String, String> citiesNamesIds = jsonData.getCities();
-
-            for (int i = 0; i < jsonOrganizations.size(); i++) {
-
-                JsonOrganization jsonOrganization = jsonOrganizations.get(i);
-                Bank bank = new Bank();
-                bank.setName(jsonOrganization.getTitle());
-                bank.setRegion(regionsNamesIds.get(jsonOrganization.getRegionId()));
-                bank.setCity(citiesNamesIds.get(jsonOrganization.getCityId()));
-                bank.setAddress(jsonOrganization.getAddress());
-                bank.setPhone(jsonOrganization.getPhone());
-                bank.setLink(jsonOrganization.getLink());
-
-                ArrayList<JsonCurrency> jsonCurrencies = jsonOrganization.getCurrencies();
-                ArrayList<Currency>  currencies = new ArrayList<>();
-                for (int j = 0; j < jsonCurrencies.size(); j++) {
-                    JsonCurrency jsonCurrency = jsonCurrencies.get(j);
-                    Currency currency = new Currency();
-                    currency.setName(currenciesNamesAbbreviations.get(jsonCurrency.getName()));
-                    currency.setSale(jsonCurrency.getAsk());
-                    currency.setPurchase(jsonCurrency.getBid());
-                    currencies.add(currency);
-                }
-                bank.setCurrencies(currencies);
-
-                bank.setDate(jsonData.getDate());
-
-                banks.add(bank);
-            }
-        }
-
-        return banks;
-    }
-
     private void initRecyclerView() {
 
-        mRecyclerView_Banks = (RecyclerView) findViewById(R.id.rv_Banks_AM);
-        mBankAdapter = new BankAdapter(mBankList);
-        mRecyclerView_Banks.setAdapter(mBankAdapter);
-        mRecyclerView_Banks.setLayoutManager(new GridLayoutManager(MainActivity.this, 1));
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
-        mRecyclerView_Banks.addItemDecoration(new SpacingDecoration(spacingInPixels));
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.sl_SwipeLayout_AM);
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.c_action_bar_bg));
 
-        mBankAdapter.setBankHandler(MainActivity.this);
+            mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+
+                    if (mSupport.checkConnection(MainActivity.this)) {
+                        apiGetData();
+                        mBankAdapter.notifyDataSetChanged();
+                    }
+
+                    Toast.makeText(MainActivity.this, "REFRESH", Toast.LENGTH_SHORT).show();
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRefreshLayout.setRefreshing(false);
+                        }
+                    }, 2000);
+                }
+            });
+        }
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_Banks_AM);
+        mBankAdapter = new BankAdapter(mBankList);
+        mRecyclerView.setAdapter(mBankAdapter);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
+        mRecyclerView.addItemDecoration(new SpacingDecoration(spacingInPixels));
+
+        mBankAdapter.setBankHandler(this);
+        isRecyclerViewCreated = true;
         isHandlerSet = true;
     }
 
@@ -221,12 +191,15 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
 
     private void setData() {
 
+        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
+
         final SetDataTask setDataTask = new SetDataTask(this, mDatabaseHelper, mBankList);
         setDataTask.setCallback(new SetDataTask.Callback() {
             @Override
             public void success() {
                 Log.e(setDataTask.LOG_TAG, "SET DATA DONE.");
 
+                mDatabaseHelper.close();
                 setDataTask.releaseCallback();
             }
 
@@ -239,6 +212,8 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
     }
 
     private void getData() {
+
+        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
 
         final GetDataTask getDataTask = new GetDataTask(mDatabaseHelper);
         getDataTask.setCallback(new GetDataTask.Callback() {
@@ -253,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
                 Log.e(getDataTask.LOG_TAG, mBankList.get(0).toString());
                 Log.e(getDataTask.LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
 
+                mDatabaseHelper.close();
                 getDataTask.releaseCallback();
             }
 
