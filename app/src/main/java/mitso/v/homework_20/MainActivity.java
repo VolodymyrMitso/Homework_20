@@ -6,16 +6,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import mitso.v.homework_20.api.Api;
@@ -29,8 +34,10 @@ import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
 import mitso.v.homework_20.recycler_view.SpacingDecoration;
 import mitso.v.homework_20.service.MyAlarmReceiver;
+import mitso.v.homework_20.support.Support;
 
-public class MainActivity extends AppCompatActivity implements IBankHandler {
+public class MainActivity extends AppCompatActivity
+        implements IBankHandler, SearchView.OnQueryTextListener {
 
     private final String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
 
@@ -180,6 +187,49 @@ public class MainActivity extends AppCompatActivity implements IBankHandler {
         isRecyclerViewCreated = true;
         isHandlerSet = true;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu, menu);
+        final MenuItem item = menu.findItem(R.id.mi_Search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setOnQueryTextListener(this);
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String _query) {
+
+        final List<Bank> filteredBankList = filter(mBankList, _query);
+        mBankAdapter.animateTo(filteredBankList);
+        mRecyclerView.scrollToPosition(0);
+
+        return true;
+    }
+
+    private List<Bank> filter(List<Bank> _bankList, String _query) {
+        _query = _query.toLowerCase();
+
+        final List<Bank> filteredModelList = new ArrayList<>();
+        for (Bank bank : _bankList) {
+            final String name = bank.getName().toLowerCase();
+            final String city = bank.getCity().toLowerCase();
+            final String region = bank.getRegion().toLowerCase();
+            if (name.contains(_query)
+                    || city.contains(_query)
+                    || region.contains(_query))
+                filteredModelList.add(bank);
+        }
+        return filteredModelList;
+    }
+
 
     @Override
     public void onPause() {

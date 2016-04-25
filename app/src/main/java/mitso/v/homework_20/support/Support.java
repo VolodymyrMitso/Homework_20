@@ -1,4 +1,4 @@
-package mitso.v.homework_20;
+package mitso.v.homework_20.support;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

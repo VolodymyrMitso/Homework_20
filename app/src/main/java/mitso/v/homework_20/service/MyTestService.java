@@ -11,13 +11,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-import mitso.v.homework_20.Support;
 import mitso.v.homework_20.api.Api;
 import mitso.v.homework_20.api.interfaces.IConnectCallback;
 import mitso.v.homework_20.api.models.Bank;
 import mitso.v.homework_20.api.models.json.JsonData;
 import mitso.v.homework_20.databse.DatabaseHelper;
 import mitso.v.homework_20.databse.SetDataTask;
+import mitso.v.homework_20.support.Support;
 
 public class MyTestService extends IntentService {
 

@@ -12,8 +12,8 @@ import com.google.gson.Gson;
 import java.util.Date;
 import java.util.List;
 
-import mitso.v.homework_20.Support;
 import mitso.v.homework_20.api.models.Bank;
+import mitso.v.homework_20.support.Support;
 
 public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
