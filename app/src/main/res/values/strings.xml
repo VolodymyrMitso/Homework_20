@@ -1,5 +1,10 @@
 <resources>
     <string name="s_app_name">Converter Lab</string>
     <string name="s_search">Search</string>
-    <string name="s_no_maps">Google Maps V2 not available!</string>
+
+    <string name="s_phone">"Телефон : "</string>
+    <string name="s_address">"Адрес : "</string>
+
+    <string name="s_capital">Киев</string>
+    <string name="s_region">Киевская область</string>
 </resources>

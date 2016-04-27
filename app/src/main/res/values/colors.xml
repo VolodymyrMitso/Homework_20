@@ -6,12 +6,20 @@
 
     <color name="colorAccent">#000000</color>
     
-    <color name="c_rv_bg">#ededed</color>
+    <color name="c_view_bg">#ededed</color>
 
     <color name="c_text_bg">#ffffff</color>
     <color name="c_title">#242e33</color>
     <color name="c_subtitle">#33454a</color>
     <color name="c_text">#495d69</color>
     <color name="c_btn_bg">#afbfc4</color>
+
+    <color name="c_title_pink">#f03e79</color>
+    <color name="c_shadow">#9c9c9c</color>
+    <color name="c_line">#e1e1e1</color>
+
+
+    <color name="c_action_menu_closed">#c21362</color>
+    <color name="c_action_menu_opened">#eb427a</color>
 
 </resources>

@@ -30,16 +30,19 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DetailsActivity"/>
+
         <receiver
-            android:name=".service.MyAlarmReceiver"
+            android:name=".service.AlarmReceiver"
             android:process=":remote"/>
 
         <service
-            android:name=".service.MyTestService"
+            android:name=".service.UpdateService"
             android:exported="false" />
 
         <receiver
-            android:name=".service.MyBootReceiver">
+            android:name=".service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>

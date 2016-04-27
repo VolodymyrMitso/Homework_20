@@ -62,6 +62,7 @@ public class GetDataTask extends AsyncTask<Void, Void, List<Bank>> {
             }
 
             cursor.close();
+            db.close();
 
         } catch (Exception e) {
             e.printStackTrace();

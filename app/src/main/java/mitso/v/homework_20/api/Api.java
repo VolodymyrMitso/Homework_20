@@ -5,7 +5,9 @@ import mitso.v.homework_20.api.models.json.JsonData;
 
 public class Api {
 
-    public static void getData(IConnectCallback callback) {
+    public final String LOG_TAG = "API_GET_LOG_TAG";
+
+    public void getData(IConnectCallback callback) {
         Connect.getInstance().getRequest(new JsonData(), callback);
     }
 }

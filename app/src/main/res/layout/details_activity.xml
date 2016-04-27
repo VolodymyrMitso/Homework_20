@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/c_view_bg">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/c_view_bg"
+        android:orientation="vertical"
+        android:padding="@dimen/d_size_17dp">
+
+        <LinearLayout
+            android:id="@+id/ll_First_AM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:background="@color/c_shadow"
+            android:orientation="vertical"
+            android:paddingBottom="2dp"
+            android:paddingRight="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/c_text_bg"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:id="@+id/tv_BankName_AD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/c_title_pink"
+                    android:textSize="23sp"
+                    tools:text="Альфа Банк" />
+
+                <TextView
+                    android:id="@+id/tv_BankRegion_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_BankName_AD"
+
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Zakarpatska oblast"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:id="@+id/tv_BankCity_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_BankRegion_AD"
+
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Uzhgorod"
+                    android:layout_marginBottom="5dp"/>
+
+                <TextView
+                    android:id="@+id/tv_Address_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_BankCity_AD"
+                    android:layout_marginBottom="5dp"
+                    android:text="Адрес : "
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_BankAddress_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_BankCity_AD"
+                    android:layout_toEndOf="@id/tv_Address_AD"
+                    android:layout_toRightOf="@id/tv_Address_AD"
+                    android:layout_marginBottom="5dp"
+
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Ceholnyanska, 8 " />
+
+                <TextView
+                    android:id="@+id/tv_Phone_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_Address_AD"
+                    android:text="Телефон : "
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_BankPhone_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_BankAddress_AD"
+                    android:layout_toEndOf="@id/tv_Phone_AD"
+                    android:layout_toRightOf="@id/tv_Phone_AD"
+
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="80505005050" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_Second_AM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_First_AM"
+            android:layout_marginBottom="7dp"
+            android:background="@color/c_shadow"
+            android:orientation="vertical"
+            android:paddingBottom="2dp"
+            android:paddingRight="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/c_text_bg"
+                android:orientation="vertical"
+                android:paddingBottom="7dp"
+                android:paddingLeft="@dimen/d_size_17dp"
+                android:paddingRight="@dimen/d_size_17dp"
+                android:paddingTop="7dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="По состоянию на :"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_BankDate_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    tools:text="Data"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tv_BankTime_AD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_below="@id/tv_BankDate_AD"
+                    tools:text="Vryemya"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_Third_AM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_Second_AM"
+            android:layout_marginBottom="7dp"
+            android:background="@color/c_shadow"
+            android:orientation="vertical"
+            android:paddingBottom="2dp"
+            android:paddingRight="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/c_text_bg"
+                android:orientation="vertical"
+                android:paddingBottom="7dp"
+                android:paddingLeft="@dimen/d_size_17dp"
+                android:paddingRight="@dimen/d_size_17dp"
+                android:paddingTop="7dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Название валюты"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Покупка"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/textView"
+                    android:layout_alignRight="@+id/textView"
+                    android:layout_below="@+id/textView"
+                    android:text="Продажа"
+                    android:textColor="@color/c_text"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_Fourth_AM"
+            android:layout_below="@+id/ll_Third_AM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/c_shadow"
+            android:orientation="vertical"
+            android:paddingBottom="2dp"
+            android:paddingRight="2dp">
+
+            <LinearLayout
+                android:id="@+id/rl_Currencies_AD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/c_text_bg"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/d_size_17dp"
+                android:paddingRight="@dimen/d_size_17dp">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ScrollView>

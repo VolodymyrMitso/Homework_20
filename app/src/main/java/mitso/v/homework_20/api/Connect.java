@@ -59,6 +59,12 @@ public class Connect {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
                         callback.onFailure(throwable);
                     }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                        callback.onFailure(throwable);
+                    }
                 }
         );
     }

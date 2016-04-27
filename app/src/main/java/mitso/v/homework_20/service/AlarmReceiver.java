@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-public class MyAlarmReceiver extends WakefulBroadcastReceiver {
+public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     public static final int REQUEST_CODE = 789;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Intent i = new Intent(context, MyTestService.class);
+        Intent i = new Intent(context, UpdateService.class);
         startWakefulService(context, i);
     }
 }

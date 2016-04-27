@@ -1,5 +1,6 @@
 package mitso.v.homework_20.recycler_view;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,10 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
 
     private List<Bank>      mBankList;
     private IBankHandler    mBankHandler;
+    private Context         mContext;
 
-    public BankAdapter(List<Bank> _bankList) {
+    public BankAdapter(Context _context, List<Bank> _bankList) {
+        this.mContext = _context;
         this.mBankList = new ArrayList<>(_bankList);
     }
 
@@ -32,10 +35,13 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
         final Bank bank = mBankList.get(position);
 
         holder.getTextView_BankName().setText(bank.getName());
-        holder.getTextView_BankRegion().setText(bank.getRegion());
+        if (bank.getRegion().equals(mContext.getResources().getString(R.string.s_capital)))
+            holder.getTextView_BankRegion().setText(mContext.getResources().getString(R.string.s_region));
+        else
+            holder.getTextView_BankRegion().setText(bank.getRegion());
         holder.getTextView_BankCity().setText(bank.getCity());
-        holder.getTextView_BankPhone().setText(bank.getPhone());
-        holder.getTextView_BankAddress().setText(bank.getAddress());
+        holder.getTextView_BankPhone().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_phone), bank.getPhone()));
+        holder.getTextView_BankAddress().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_address), bank.getAddress()));
 
         holder.getImageButton_Link().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +67,7 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
         holder.getImageButton_Details().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBankHandler.showDetails();
+                mBankHandler.showDetails(bank);
             }
         });
     }

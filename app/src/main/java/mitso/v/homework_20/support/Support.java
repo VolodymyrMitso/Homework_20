@@ -3,8 +3,13 @@ package mitso.v.homework_20.support;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +35,9 @@ public class Support {
         return ((wifiInfo != null && wifiInfo.isConnected()) || (networkInfo != null && networkInfo.isConnected()));
     }
 
+    public List<Bank> getBanksFromData(JsonData jsonData) {
 
-    public ArrayList<Bank> getBanksFromData(JsonData jsonData) {
-
-        ArrayList<Bank> banks = new ArrayList<>();
+        List<Bank> banks = new ArrayList<>();
 
         if (jsonData != null) {
 
@@ -59,8 +63,8 @@ public class Support {
                     JsonCurrency jsonCurrency = jsonCurrencies.get(j);
                     Currency currency = new Currency();
                     currency.setName(currenciesNamesAbbreviations.get(jsonCurrency.getName()));
-                    currency.setSale(jsonCurrency.getAsk());
-                    currency.setPurchase(jsonCurrency.getBid());
+                    currency.setSale(Double.parseDouble(jsonCurrency.getAsk()));
+                    currency.setPurchase(Double.parseDouble(jsonCurrency.getBid()));
                     currencies.add(currency);
                 }
                 bank.setCurrencies(currencies);
@@ -72,5 +76,81 @@ public class Support {
         }
 
         return banks;
+    }
+
+    public String printException(Throwable _error) {
+
+        StringWriter errors = new StringWriter();
+        _error.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
+    }
+
+    public List<Bank> filter(List<Bank> _bankList, String _query) {
+        _query = _query.toLowerCase();
+
+        final List<Bank> filteredModelList = new ArrayList<>();
+        for (Bank bank : _bankList) {
+            final String name = bank.getName().toLowerCase();
+            final String city = bank.getCity().toLowerCase();
+            final String region = bank.getRegion().toLowerCase();
+            if (name.contains(_query)
+                    || city.contains(_query)
+                    || region.contains(_query))
+                filteredModelList.add(bank);
+        }
+        return filteredModelList;
+    }
+
+    public List<Bank> getUnitedBanks(List<Bank> apiBanks, List<Bank> databaseBanks) {
+
+        List<Bank> unitedBanks = new ArrayList<>();
+
+        Log.e("LIST", String.valueOf(unitedBanks.size()));
+
+        unitedBanks.addAll(databaseBanks);
+
+        Log.e("LIST", String.valueOf(unitedBanks.size()));
+
+        for (Bank apiBank : apiBanks)
+            if (!unitedBanks.contains(apiBank))
+                unitedBanks.add(apiBank);
+
+        Log.e("LIST", String.valueOf(unitedBanks.size()));
+
+
+        for (int i = 0; i < unitedBanks.size(); i++) {
+            for (int j = 0; j < unitedBanks.size(); ) {
+                Bank bankI = unitedBanks.get(i);
+                Bank bankJ = unitedBanks.get(j);
+                if (i != j) {
+                    if (bankI.getName().equals(bankJ.getName())
+                            && bankI.getRegion().equals(bankJ.getRegion())
+                            && bankI.getCity().equals(bankJ.getCity())
+                            && bankI.getAddress().equals(bankJ.getAddress())
+                            && bankI.getDate().after(bankJ.getDate())) {
+
+                        unitedBanks.remove(j);
+                        j = 0;
+                        i = 0;
+
+                        Log.e("LIST", String.valueOf(unitedBanks.size()));
+
+                    } else
+                        j++;
+                } else
+                    j++;
+            }
+        }
+
+        Log.e("LIST", String.valueOf(unitedBanks.size()));
+
+        Collections.sort(unitedBanks, new Comparator<Bank>() {
+            @Override
+            public int compare(Bank bank1, Bank bank2) {
+                return bank1.getName().toLowerCase().compareTo(bank2.getName().toLowerCase());
+            }
+        });
+
+        return unitedBanks;
     }
 }

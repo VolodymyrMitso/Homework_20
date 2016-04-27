@@ -19,9 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import mitso.v.homework_20.api.Api;
@@ -34,16 +31,29 @@ import mitso.v.homework_20.databse.SetDataTask;
 import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
 import mitso.v.homework_20.recycler_view.SpacingDecoration;
-import mitso.v.homework_20.service.MyAlarmReceiver;
+import mitso.v.homework_20.service.AlarmReceiver;
 import mitso.v.homework_20.support.Support;
 
 public class MainActivity extends AppCompatActivity
         implements IBankHandler, SearchView.OnQueryTextListener {
 
-    private final String LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
+    private final String        LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
 
-    private JsonData        mJsonData;
-    private List<Bank>      mBankList;
+    public static boolean       isActivityRunning;
+
+    private Support             mSupport;
+
+    private JsonData            mJsonData;
+    private List<Bank>          mBankList;
+    private List<Bank>          mApiBankList;
+    private List<Bank>          mDatabaseBankList;
+
+    private Api                 mApiGet;
+    private boolean             isApiRequestSent;
+    private boolean             isApiRequestDone;
+
+    private DatabaseHelper      mDatabaseHelper;
+    private boolean             isDatabaseCreated;
 
     private RecyclerView        mRecyclerView;
     private SwipeRefreshLayout  mRefreshLayout;
@@ -51,75 +61,83 @@ public class MainActivity extends AppCompatActivity
     private boolean             isRecyclerViewCreated;
     private boolean             isHandlerSet;
 
-    private DatabaseHelper  mDatabaseHelper;
-
-    private Support mSupport;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        isActivityRunning = true;
+        scheduleAlarm();
+
         setContentView(R.layout.main_activity);
-
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(Html.fromHtml("<font color='#" +
-                    Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
-                    "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
-
-//        scheduleAlarm();
+        initActionBar();
 
         mSupport = new Support();
 
         if (mSupport.checkIfDatabaseExists(this)) {
 
             Log.e(LOG_TAG, "DATABASE EXIST.");
+            isDatabaseCreated = true;
 
             if (mSupport.checkConnection(this)) {
 
                 Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
+                isApiRequestSent = true;
 
             } else {
 
                 Log.e(LOG_TAG, "CONNECTION - NO.");
-                getData();
+                getDatabaseData();
+                isApiRequestSent = false;
             }
 
         } else {
 
             Log.e(LOG_TAG, "DATABASE NOT EXIST.");
+            isDatabaseCreated = false;
 
             if (mSupport.checkConnection(this)) {
 
                 Log.e(LOG_TAG, "CONNECTION - YES.");
                 apiGetData();
+                isApiRequestSent = true;
 
             } else {
 
                 Log.e(LOG_TAG, "CONNECTION - NO.");
-                Toast.makeText(MainActivity.this, "APP NEED WI-FI FOR FIRST RUN.\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "APP NEED WI-FI FOR FIRST RUN.\nTURN WI-FI ON\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
                 finish();
             }
         }
     }
 
+    private void initActionBar() {
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(Html.fromHtml("<font color='#" +
+                    Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
+                    "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
+    }
+
     public void scheduleAlarm() {
 
-        final Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        final PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, 60000, pIntent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5 * 60 * 1000, AlarmManager.INTERVAL_HALF_HOUR, alarmPendingIntent);
     }
 
 
     private void apiGetData() {
 
-        Api.getData(new IConnectCallback() {
+        mApiGet = new Api();
+        mApiGet.getData(new IConnectCallback() {
             @Override
             public void onSuccess(Object object) {
 
-                Log.e(LOG_TAG, "onSuccess");
+                Log.e(mApiGet.LOG_TAG, "ON SUCCESS");
+                isApiRequestDone = true;
 
                 mJsonData = (JsonData) object;
 
@@ -127,27 +145,41 @@ public class MainActivity extends AppCompatActivity
 //                Log.e(LOG_TAG, mJsonData.print_2());
 //                Log.e(LOG_TAG, mJsonData.print_3());
 
-                mBankList = mSupport.getBanksFromData(mJsonData);
+                mApiBankList = mSupport.getBanksFromData(mJsonData);
 
-                if (mBankList != null) {
-                    Log.e(LOG_TAG, String.valueOf(mBankList.size()));
-                    Log.e(LOG_TAG, mBankList.get(0).toString());
-                    Log.e(LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
+                if (mApiBankList != null) {
+                    Log.e(mApiGet.LOG_TAG, "BANKS COUNT : " + String.valueOf(mApiBankList.size()));
+                    Log.e(mApiGet.LOG_TAG, mApiBankList.get(0).toString());
+                    Log.e(mApiGet.LOG_TAG, mApiBankList.get(mApiBankList.size() - 1).toString());
                 }
 
-                if (!isRecyclerViewCreated)
-                    initRecyclerView();
-
-                setData();
+                if (isDatabaseCreated) {
+                    getDatabaseData();
+                } else {
+                    mBankList = mApiBankList;
+                    if (!isRecyclerViewCreated) {
+                        initRecyclerView();
+                        Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                        Log.e(LOG_TAG, "LIST = API.");
+                    }
+                    setDatabaseData();
+                }
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(Throwable _throwable) {
 
-                StringWriter errors = new StringWriter();
-                throwable.printStackTrace(new PrintWriter(errors));
-                Log.e(LOG_TAG, "onFailure");
-                Log.e(LOG_TAG, errors.toString());
+                isApiRequestDone = false;
+
+                if (mSupport.checkIfDatabaseExists(MainActivity.this))
+                    getDatabaseData();
+                else {
+                    Toast.makeText(MainActivity.this, "SERVER IS DEAD.\nTRY AGAIN LATER.\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                Log.e(mApiGet.LOG_TAG, "ON FAILURE");
+                Log.e(mApiGet.LOG_TAG, mSupport.printException(_throwable));
             }
         });
     }
@@ -164,7 +196,7 @@ public class MainActivity extends AppCompatActivity
 
                     if (mSupport.checkConnection(MainActivity.this)) {
                         apiGetData();
-                        mBankAdapter.notifyDataSetChanged();
+                        isApiRequestSent = true;
                     }
 
                     Toast.makeText(MainActivity.this, "REFRESH", Toast.LENGTH_SHORT).show();
@@ -180,7 +212,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_Banks_AM);
-        mBankAdapter = new BankAdapter(mBankList);
+        mBankAdapter = new BankAdapter(this, mBankList);
         mRecyclerView.setAdapter(mBankAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
@@ -189,7 +221,7 @@ public class MainActivity extends AppCompatActivity
         mBankAdapter.setBankHandler(this);
         isRecyclerViewCreated = true;
         isHandlerSet = true;
-        Log.e(LOG_TAG, "HANDLER IS SET ON");
+        Log.e(LOG_TAG, "HANDLER IS SET ON.");
     }
 
     @Override
@@ -211,27 +243,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextChange(String _query) {
 
-        final List<Bank> filteredBankList = filter(mBankList, _query);
-        mBankAdapter.animateTo(filteredBankList);
-        mRecyclerView.scrollToPosition(0);
+        if (isRecyclerViewCreated) {
+
+            final List<Bank> filteredBankList = mSupport.filter(mBankList, _query);
+            mBankAdapter.animateTo(filteredBankList);
+            mRecyclerView.scrollToPosition(0);
+        }
 
         return true;
-    }
-
-    private List<Bank> filter(List<Bank> _bankList, String _query) {
-        _query = _query.toLowerCase();
-
-        final List<Bank> filteredModelList = new ArrayList<>();
-        for (Bank bank : _bankList) {
-            final String name = bank.getName().toLowerCase();
-            final String city = bank.getCity().toLowerCase();
-            final String region = bank.getRegion().toLowerCase();
-            if (name.contains(_query)
-                    || city.contains(_query)
-                    || region.contains(_query))
-                filteredModelList.add(bank);
-        }
-        return filteredModelList;
     }
 
 
@@ -239,14 +258,16 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
 
+        isActivityRunning = false;
+
         try {
             if (isHandlerSet) {
                 mBankAdapter.releaseBankHandler();
                 isHandlerSet = false;
-                Log.e(LOG_TAG, "HANDLER IS SET OFF");
+                Log.e(LOG_TAG, "HANDLER IS SET OFF.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            mSupport.printException(e);
         }
     }
 
@@ -254,18 +275,20 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+        isActivityRunning = true;
+
         try {
             if (!isHandlerSet) {
                 mBankAdapter.setBankHandler(this);
                 isHandlerSet = true;
-                Log.e(LOG_TAG, "HANDLER IS SET ON");
+                Log.e(LOG_TAG, "HANDLER IS SET ON.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            mSupport.printException(e);
         }
     }
 
-    private void setData() {
+    private void setDatabaseData() {
 
         mDatabaseHelper = new DatabaseHelper(MainActivity.this);
 
@@ -273,7 +296,7 @@ public class MainActivity extends AppCompatActivity
         setDataTask.setCallback(new SetDataTask.Callback() {
             @Override
             public void success() {
-                Log.e(setDataTask.LOG_TAG, "SET DATA DONE.");
+                Log.e(setDataTask.LOG_TAG, "ON SUCCESS.");
 
                 mDatabaseHelper.close();
                 setDataTask.releaseCallback();
@@ -287,7 +310,7 @@ public class MainActivity extends AppCompatActivity
         setDataTask.execute();
     }
 
-    private void getData() {
+    private void getDatabaseData() {
 
         mDatabaseHelper = new DatabaseHelper(MainActivity.this);
 
@@ -295,14 +318,56 @@ public class MainActivity extends AppCompatActivity
         getDataTask.setCallback(new GetDataTask.Callback() {
             @Override
             public void success(List<Bank> _result) {
-                mBankList = _result;
+                mDatabaseBankList = _result;
 
-                initRecyclerView();
+                Log.e(getDataTask.LOG_TAG, "ON SUCCESS.");
 
-                Log.e(getDataTask.LOG_TAG, "GET DATA DONE.");
+                if (mDatabaseBankList != null) {
+                    Log.e(getDataTask.LOG_TAG, "BANKS COUNT : " + String.valueOf(mDatabaseBankList.size()));
+                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(0).toString());
+                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(mDatabaseBankList.size() - 1).toString());
+                }
 
-                Log.e(getDataTask.LOG_TAG, mBankList.get(0).toString());
-                Log.e(getDataTask.LOG_TAG, mBankList.get(mBankList.size() - 1).toString());
+                if (isApiRequestSent) {
+
+                    if (isApiRequestDone) {
+
+                        mBankList = mSupport.getUnitedBanks(mApiBankList, mDatabaseBankList);
+                        if (!isRecyclerViewCreated) {
+                            initRecyclerView();
+                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
+                        } else {
+                            mBankAdapter.notifyDataSetChanged();
+                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
+                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
+                        }
+
+                        setDatabaseData();
+
+                    } else {
+
+                        mBankList = mDatabaseBankList;
+                        if (!isRecyclerViewCreated) {
+                            initRecyclerView();
+                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                            Log.e(LOG_TAG, "LIST = DATABASE.");
+                        } else {
+                            mBankAdapter.notifyDataSetChanged();
+                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
+                            Log.e(LOG_TAG, "LIST = DATABASE.");
+                        }
+                    }
+
+                } else {
+
+                    mBankList = mDatabaseBankList;
+                    if (!isRecyclerViewCreated) {
+                        initRecyclerView();
+                        Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                        Log.e(LOG_TAG, "LIST = DATABASE.");
+                    }
+                }
 
                 mDatabaseHelper.close();
                 getDataTask.releaseCallback();
@@ -348,8 +413,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void showDetails() {
+    public void showDetails(Bank _bank) {
 
+        Intent detailsActivityIntent = new Intent(this, DetailsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("bank", _bank);
+        detailsActivityIntent.putExtras(bundle);
+        startActivity(detailsActivityIntent);
     }
-
 }
