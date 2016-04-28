@@ -19,6 +19,8 @@ public class Constants {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static final int ALARM_REQUEST_CODE      = 789;
+
     public static final String BANK_BUNDLE_KEY      = "BANK_BUNDLE_KEY";
     public static final String BITMAP_BUNDLE_KEY    = "BITMAP_BUNDLE_KEY";
 

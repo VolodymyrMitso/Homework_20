@@ -6,8 +6,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
-    public static final int REQUEST_CODE = 789;
-
     @Override
     public void onReceive(Context _context, Intent _intent) {
 

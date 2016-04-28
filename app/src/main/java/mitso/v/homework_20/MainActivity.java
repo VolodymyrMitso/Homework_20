@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
     public void scheduleAlarm() {
 
         final Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        final PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, Constants.ALARM_REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + Constants.TIME_5_MINUTES, AlarmManager.INTERVAL_HALF_HOUR, alarmPendingIntent);
