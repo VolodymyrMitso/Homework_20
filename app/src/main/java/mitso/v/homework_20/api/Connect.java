@@ -1,7 +1,5 @@
 package mitso.v.homework_20.api;
 
-import android.util.Log;
-
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -17,8 +15,6 @@ import mitso.v.homework_20.api.interfaces.IModelResponse;
 
 public class Connect {
 
-    private final String LOG_TAG = "CONNECT_CLASS_LOG_TAG";
-
     private static Connect      sInstance;
     private AsyncHttpClient     mClient;
 
@@ -32,49 +28,47 @@ public class Connect {
         return sInstance;
     }
 
-    public void getRequest(final IModelResponse modelResponse, final IConnectCallback callback) {
-
-        Log.e(LOG_TAG, ApiConstants.URL_SERVER);
+    public void getRequest(final IModelResponse _modelResponse, final IConnectCallback _callback) {
 
         mClient.get(ApiConstants.URL_SERVER, new JsonHttpResponseHandler()
                 {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        parseData(response, modelResponse, callback);
+                        parseData(response, _modelResponse, _callback);
                     }
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        parseData(response, modelResponse, callback);
+                        parseData(response, _modelResponse, _callback);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-                        callback.onFailure(throwable);
+                        _callback.onFailure(throwable);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                         super.onFailure(statusCode, headers, throwable, errorResponse);
-                        callback.onFailure(throwable);
+                        _callback.onFailure(throwable);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
-                        callback.onFailure(throwable);
+                        _callback.onFailure(throwable);
                     }
                 }
         );
     }
 
-    private void parseData(Object jsonObject, IModelResponse modelObject, IConnectCallback callback) {
+    private void parseData(Object _jsonObject, IModelResponse _modelObject, IConnectCallback _callback) {
 
-        if (null != modelObject) {
+        if (null != _modelObject) {
             try {
-                modelObject.configure(jsonObject);
-                callback.onSuccess(modelObject);
+                _modelObject.configure(_jsonObject);
+                _callback.onSuccess(_modelObject);
             } catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }

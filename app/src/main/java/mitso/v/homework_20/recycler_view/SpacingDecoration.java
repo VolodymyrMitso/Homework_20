@@ -6,22 +6,22 @@ import android.view.View;
 
 public class SpacingDecoration extends RecyclerView.ItemDecoration {
 
-    private int mSpace;
+    private int     mSpace;
 
-    public SpacingDecoration(int mSpace) {
-        this.mSpace = mSpace;
+    public SpacingDecoration(int _space) {
+        this.mSpace = _space;
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(Rect _outRect, View _view, RecyclerView _parent, RecyclerView.State _state) {
 
-        outRect.left = mSpace;
-        outRect.right = mSpace;
-        outRect.bottom = mSpace;
+        _outRect.left = mSpace;
+        _outRect.right = mSpace;
+        _outRect.bottom = mSpace;
 
-        if (parent.getChildLayoutPosition(view) == 0)
-            outRect.top = mSpace;
+        if (_parent.getChildLayoutPosition(_view) == 0)
+            _outRect.top = mSpace;
         else
-            outRect.top = 0;
+            _outRect.top = 0;
     }
 }

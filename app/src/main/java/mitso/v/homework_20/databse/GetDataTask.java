@@ -10,14 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mitso.v.homework_20.api.models.Bank;
+import mitso.v.homework_20.constansts.Constants;
 
 public class GetDataTask extends AsyncTask<Void, Void, List<Bank>> {
 
-    public String LOG_TAG = "GET_DATA_TASK_LOG_TAG";
+    public String LOG_TAG = Constants.GET_DATA_TASK_LOG_TAG;
 
     public interface Callback{
-        void success(List<Bank> _result);
-        void failure(Throwable _error);
+        void onSuccess(List<Bank> _result);
+        void onFailure(Throwable _error);
     }
 
     private DatabaseHelper mDatabaseHelper;
@@ -78,9 +79,9 @@ public class GetDataTask extends AsyncTask<Void, Void, List<Bank>> {
 
         if (mCallback != null) {
             if (mException == null)
-                mCallback.success(mBankList);
+                mCallback.onSuccess(mBankList);
             else
-                mCallback.failure(mException);
+                mCallback.onFailure(mException);
         }
     }
 }

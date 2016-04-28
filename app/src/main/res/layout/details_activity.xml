@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_BankCity_AD"
                     android:layout_marginBottom="5dp"
-                    android:text="Адрес : "
+                    android:text="@string/s_address"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_Address_AD"
-                    android:text="Телефон : "
+                    android:text="@string/s_phone"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 
@@ -140,7 +140,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="По состоянию на :"
+                    android:text="@string/s_state"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 
@@ -200,7 +200,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="Название валюты"
+                    android:text="@string/s_currency_name"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 
@@ -211,7 +211,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:text="Покупка"
+                    android:text="@string/s_purchase"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 
@@ -221,7 +221,7 @@
                     android:layout_alignEnd="@+id/textView"
                     android:layout_alignRight="@+id/textView"
                     android:layout_below="@+id/textView"
-                    android:text="Продажа"
+                    android:text="@string/s_sale"
                     android:textColor="@color/c_text"
                     android:textSize="15sp" />
 

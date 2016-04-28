@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/c_share_btn_bg"
-            android:text="SHARE"
+            android:text="@string/s_share"
             android:textColor="@color/c_share_btn_text"
             android:textSize="20sp" />
 

@@ -11,15 +11,16 @@ import com.google.gson.Gson;
 import java.util.List;
 
 import mitso.v.homework_20.api.models.Bank;
-import mitso.v.homework_20.support.Support;
+import mitso.v.homework_20.constansts.Constants;
+import mitso.v.homework_20.support.SupportMain;
 
 public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
-    public String LOG_TAG = "SET_DATA_TASK_LOG_TAG";
+    public String LOG_TAG = Constants.SET_DATA_TASK_LOG_TAG;
 
     public interface Callback{
-        void success();
-        void failure(Throwable _error);
+        void onSuccess();
+        void onFailure(Throwable _error);
     }
 
     private Context mContext;
@@ -46,7 +47,7 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         try {
-            if (new Support().checkIfDatabaseExists(mContext)) {
+            if (new SupportMain().checkIfDatabaseExists(mContext)) {
 
                 Log.e(LOG_TAG, "REWRITE DATABASE.");
 
@@ -101,9 +102,9 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
         if (mCallback != null) {
             if (mException == null)
-                mCallback.success();
+                mCallback.onSuccess();
             else
-                mCallback.failure(mException);
+                mCallback.onFailure(mException);
         }
     }
 }

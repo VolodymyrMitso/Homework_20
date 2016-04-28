@@ -7,8 +7,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import mitso.v.homework_20.DetailsActivity;
@@ -20,39 +18,42 @@ import mitso.v.homework_20.api.models.json.JsonData;
 import mitso.v.homework_20.databse.DatabaseHelper;
 import mitso.v.homework_20.databse.GetDataTask;
 import mitso.v.homework_20.databse.SetDataTask;
-import mitso.v.homework_20.support.Support;
+import mitso.v.homework_20.support.SupportMain;
 
 public class UpdateService extends IntentService {
 
-    private final String LOG_TAG = "MY_TEST_SERVICE_LOG_TAG";
+    public static boolean   isServiceRunning;
 
-    private JsonData mJsonData;
-    private List<Bank> mBankList;
-    private DatabaseHelper mDatabaseHelper;
+    private SupportMain     mSupport;
 
-    private Support mSupport;
+    private JsonData        mJsonData;
+    private List<Bank>      mBankList;
+    private List<Bank>      mApiBankList;
+    private List<Bank>      mDatabaseBankList;
 
     private Api mApiGet;
 
-    private List<Bank>      mApiBankList;
-    private List<Bank>      mDatabaseBankList;
+    private DatabaseHelper  mDatabaseHelper;
 
     public UpdateService() {
         super("UpdateService");
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent _intent) {
 
-        mSupport = new Support();
+        isServiceRunning = true;
 
-        Handler handler = new Handler(Looper.getMainLooper());
+        mSupport = new SupportMain();
+
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
                 if (!MainActivity.isActivityRunning && !DetailsActivity.isActivityRunning) {
-                    Toast.makeText(UpdateService.this, "ACTIVITIES ARE NOT RUNNING", Toast.LENGTH_SHORT).show();
+
                     if (mSupport.checkConnection(getApplicationContext()))
+
                         apiGetData();
                 } else
                     Toast.makeText(UpdateService.this, "ACTIVITIES ARE RUNNING", Toast.LENGTH_SHORT).show();
@@ -67,36 +68,32 @@ public class UpdateService extends IntentService {
             @Override
             public void onSuccess(Object object) {
 
-                Log.e(LOG_TAG, "onSuccess");
+                Log.e(mApiGet.LOG_TAG, "ON SUCCESS");
 
                 mJsonData = (JsonData) object;
 
-                Log.e(LOG_TAG, mJsonData.print_1());
-                Log.e(LOG_TAG, mJsonData.print_2());
-                Log.e(LOG_TAG, mJsonData.print_3());
+//                Log.e(LOG_TAG, mJsonData.print_1());
+//                Log.e(LOG_TAG, mJsonData.print_2());
+//                Log.e(LOG_TAG, mJsonData.print_3());
 
                 mApiBankList =  mSupport.getBanksFromData(mJsonData);
 
                 if (mApiBankList != null) {
-                    Log.e(LOG_TAG, String.valueOf(mApiBankList.size()));
-                    Log.e(LOG_TAG, mApiBankList.get(0).toString());
-                    Log.e(LOG_TAG, mApiBankList.get(mApiBankList.size() - 1).toString());
-
-                    Toast.makeText(getApplication(), String.valueOf(mApiBankList.size()), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplication(), mApiBankList.get(0).toString(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getApplication(), mApiBankList.get(mApiBankList.size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                    Log.e(mApiGet.LOG_TAG, String.valueOf(mApiBankList.size()));
+                    Log.e(mApiGet.LOG_TAG, mApiBankList.get(0).toString());
+                    Log.e(mApiGet.LOG_TAG, mApiBankList.get(mApiBankList.size() - 1).toString());
                 }
 
                 getDatabaseData();
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(Throwable _error) {
 
-                StringWriter errors = new StringWriter();
-                throwable.printStackTrace(new PrintWriter(errors));
-                Log.e(LOG_TAG, "onFailure");
-                Log.e(LOG_TAG, errors.toString());
+                isServiceRunning = false;
+
+                Log.e(mApiGet.LOG_TAG, "ON FAILURE");
+                Log.e(mApiGet.LOG_TAG, mSupport.printException(_error));
             }
         });
     }
@@ -108,7 +105,8 @@ public class UpdateService extends IntentService {
         final GetDataTask getDataTask = new GetDataTask(mDatabaseHelper);
         getDataTask.setCallback(new GetDataTask.Callback() {
             @Override
-            public void success(List<Bank> _result) {
+            public void onSuccess(List<Bank> _result) {
+
                 mDatabaseBankList = _result;
 
                 Log.e(getDataTask.LOG_TAG, "ON SUCCESS.");
@@ -127,12 +125,14 @@ public class UpdateService extends IntentService {
             }
 
             @Override
-            public void failure(Throwable _error) {
+            public void onFailure(Throwable _error) {
 
-                StringWriter errors = new StringWriter();
-                _error.printStackTrace(new PrintWriter(errors));
-                Log.e(LOG_TAG, "onFailure");
-                Log.e(LOG_TAG, errors.toString());
+                isServiceRunning = false;
+
+                Log.e(getDataTask.LOG_TAG, "ON FAILURE");
+                Log.e(getDataTask.LOG_TAG, mSupport.printException(_error));
+
+                getDataTask.releaseCallback();
             }
         });
         getDataTask.execute();
@@ -145,18 +145,25 @@ public class UpdateService extends IntentService {
         final SetDataTask setDataTask = new SetDataTask(getApplicationContext(), mDatabaseHelper, mBankList);
         setDataTask.setCallback(new SetDataTask.Callback() {
             @Override
-            public void success() {
-                Log.e(setDataTask.LOG_TAG, "SET DATA DONE.");
+            public void onSuccess() {
 
-                Toast.makeText(getApplication(), "SET DATA DONE.", Toast.LENGTH_SHORT).show();
+                isServiceRunning = false;
+
+                Log.e(setDataTask.LOG_TAG, "SET DATA DONE.");
 
                 mDatabaseHelper.close();
                 setDataTask.releaseCallback();
             }
 
             @Override
-            public void failure(Throwable _error) {
-                // TODO: handle this ...
+            public void onFailure(Throwable _error) {
+
+                isServiceRunning = false;
+
+                Log.e(setDataTask.LOG_TAG, "ON FAILURE");
+                Log.e(setDataTask.LOG_TAG, mSupport.printException(_error));
+
+                setDataTask.releaseCallback();
             }
         });
         setDataTask.execute();

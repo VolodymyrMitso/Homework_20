@@ -16,31 +16,29 @@ import java.util.Map;
 
 import mitso.v.homework_20.api.ApiConstants;
 import mitso.v.homework_20.api.interfaces.IModelResponse;
+import mitso.v.homework_20.constansts.Constants;
 
 public class JsonData implements Serializable, IModelResponse {
 
-    private String sourceId;
-    private Date date;
-    private List<JsonOrganization> organizations;
-    private Map<String, String> orgTypes;
-    private Map<String, String> currencies;
-    private Map<String, String> regions;
-    private Map<String, String> cities;
-
-    private SimpleDateFormat simpleDateFormatIn = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    private SimpleDateFormat simpleDateFormatOut = new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss");
+    private String                  sourceId;
+    private Date                    date;
+    private List<JsonOrganization>  organizations;
+    private Map<String, String>     orgTypes;
+    private Map<String, String>     currencies;
+    private Map<String, String>     regions;
+    private Map<String, String>     cities;
 
     @Override
-    public void configure(Object object) throws JSONException, ParseException {
+    public void configure(Object _object) throws JSONException, ParseException {
 
-        JSONObject jsonObject = (JSONObject) object;
+        JSONObject jsonObject = (JSONObject) _object;
 
         if (jsonObject.has(ApiConstants.DATA_SOURCE_ID_KEY) && !jsonObject.isNull(ApiConstants.DATA_SOURCE_ID_KEY))
             sourceId = jsonObject.getString(ApiConstants.DATA_SOURCE_ID_KEY);
 
         if (jsonObject.has(ApiConstants.DATA_DATE_KEY) && !jsonObject.isNull(ApiConstants.DATA_DATE_KEY)) {
             String string = jsonObject.getString(ApiConstants.DATA_DATE_KEY);
-            date = simpleDateFormatIn.parse(string);
+            date = new SimpleDateFormat(Constants.DATE_AND_TIME_FORMAT_IN).parse(string);
         }
 
         if (jsonObject.has(ApiConstants.DATA_ORGANIZATIONS_KEY) && !jsonObject.isNull(ApiConstants.DATA_ORGANIZATIONS_KEY)) {
@@ -93,7 +91,7 @@ public class JsonData implements Serializable, IModelResponse {
 
         String result = "DATA INFO:\n" +
                         "sourceId = " + sourceId + "\n" +
-                        "date = " + simpleDateFormatOut.format(date) + "\n";
+                        "date = " + new SimpleDateFormat(Constants.DATE_AND_TIME_FORMAT_OUT).format(date) + "\n";
         result += "orgTypes = \n";
         for (Map.Entry<String, String> pair : orgTypes.entrySet())
             result += "    " + pair.getKey() + " | " + pair.getValue() + "\n";

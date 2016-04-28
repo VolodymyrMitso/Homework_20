@@ -13,22 +13,22 @@ import mitso.v.homework_20.api.interfaces.IModelResponse;
 
 public class JsonOrganization implements Serializable, IModelResponse {
 
-    private String id;
-    private Integer oldId;
-    private Integer orgType;
-    private Boolean branch;
-    private String title;
-    private String regionId;
-    private String cityId;
-    private String phone;
-    private String address;
-    private String link;
+    private String                  id;
+    private Integer                 oldId;
+    private Integer                 orgType;
+    private Boolean                 branch;
+    private String                  title;
+    private String                  regionId;
+    private String                  cityId;
+    private String                  phone;
+    private String                  address;
+    private String                  link;
     private ArrayList<JsonCurrency> currencies;
 
     @Override
-    public void configure(Object object) throws JSONException, ParseException {
+    public void configure(Object _object) throws JSONException, ParseException {
 
-        JSONObject jsonObject = (JSONObject) object;
+        JSONObject jsonObject = (JSONObject) _object;
 
         if (jsonObject.has(ApiConstants.ORGANIZATION_ID_KEY) && !jsonObject.isNull(ApiConstants.ORGANIZATION_ID_KEY))
             id = jsonObject.getString(ApiConstants.ORGANIZATION_ID_KEY);
@@ -105,18 +105,6 @@ public class JsonOrganization implements Serializable, IModelResponse {
 
     public String getId() {
         return id;
-    }
-
-    public Integer getOldId() {
-        return oldId;
-    }
-
-    public Integer getOrgType() {
-        return orgType;
-    }
-
-    public Boolean getBranch() {
-        return branch;
     }
 
     public String getTitle() {

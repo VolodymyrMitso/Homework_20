@@ -9,9 +9,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public static final int REQUEST_CODE = 789;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context _context, Intent _intent) {
 
-        Intent i = new Intent(context, UpdateService.class);
-        startWakefulService(context, i);
+        final Intent i = new Intent(_context, UpdateService.class);
+        startWakefulService(_context, i);
     }
 }

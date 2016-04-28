@@ -17,7 +17,6 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ import mitso.v.homework_20.api.Api;
 import mitso.v.homework_20.api.interfaces.IConnectCallback;
 import mitso.v.homework_20.api.models.Bank;
 import mitso.v.homework_20.api.models.json.JsonData;
+import mitso.v.homework_20.constansts.Constants;
 import mitso.v.homework_20.databse.DatabaseHelper;
 import mitso.v.homework_20.databse.GetDataTask;
 import mitso.v.homework_20.databse.SetDataTask;
@@ -32,16 +32,17 @@ import mitso.v.homework_20.recycler_view.BankAdapter;
 import mitso.v.homework_20.recycler_view.IBankHandler;
 import mitso.v.homework_20.recycler_view.SpacingDecoration;
 import mitso.v.homework_20.service.AlarmReceiver;
-import mitso.v.homework_20.support.Support;
+import mitso.v.homework_20.service.UpdateService;
+import mitso.v.homework_20.support.SupportMain;
 
 public class MainActivity extends AppCompatActivity
         implements IBankHandler, SearchView.OnQueryTextListener {
 
-    private final String        LOG_TAG = "MAIN_ACTIVITY_LOG_TAG";
+    private final String        LOG_TAG = Constants.MAIN_ACTIVITY_LOG_TAG;
 
     public static boolean       isActivityRunning;
 
-    private Support             mSupport;
+    private SupportMain         mSupport;
 
     private JsonData            mJsonData;
     private List<Bank>          mBankList;
@@ -65,17 +66,22 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (UpdateService.isServiceRunning) {
+            finish();
+            mSupport.showToast(this, getResources().getString(R.string.s_updating));
+        }
+
         isActivityRunning = true;
         scheduleAlarm();
 
         setContentView(R.layout.main_activity);
         initActionBar();
 
-        mSupport = new Support();
+        mSupport = new SupportMain();
 
         if (mSupport.checkIfDatabaseExists(this)) {
 
-            Log.e(LOG_TAG, "DATABASE EXIST.");
+            Log.e(LOG_TAG, "DATABASE EXISTS.");
             isDatabaseCreated = true;
 
             if (mSupport.checkConnection(this)) {
@@ -93,7 +99,7 @@ public class MainActivity extends AppCompatActivity
 
         } else {
 
-            Log.e(LOG_TAG, "DATABASE NOT EXIST.");
+            Log.e(LOG_TAG, "DATABASE DOESN'T EXIST.");
             isDatabaseCreated = false;
 
             if (mSupport.checkConnection(this)) {
@@ -105,18 +111,10 @@ public class MainActivity extends AppCompatActivity
             } else {
 
                 Log.e(LOG_TAG, "CONNECTION - NO.");
-                Toast.makeText(MainActivity.this, "APP NEED WI-FI FOR FIRST RUN.\nTURN WI-FI ON\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
+                mSupport.showToast(this, getResources().getString(R.string.s_fist_run_internet));
                 finish();
             }
         }
-    }
-
-    private void initActionBar() {
-
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(Html.fromHtml("<font color='#" +
-                    Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
-                    "'>" + getResources().getString(R.string.s_app_name) + "</font>"));
     }
 
     public void scheduleAlarm() {
@@ -125,9 +123,16 @@ public class MainActivity extends AppCompatActivity
         final PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5 * 60 * 1000, AlarmManager.INTERVAL_HALF_HOUR, alarmPendingIntent);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + Constants.TIME_5_MINUTES, AlarmManager.INTERVAL_HALF_HOUR, alarmPendingIntent);
     }
 
+    private void initActionBar() {
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(Html.fromHtml(Constants.FONT_COLOR_1 +
+                    Integer.toHexString(getResources().getColor(R.color.c_action_bar_text)).substring(2) +
+                    Constants.FONT_COLOR_2 + getResources().getString(R.string.s_app_name) + Constants.FONT_COLOR_3));
+    }
 
     private void apiGetData() {
 
@@ -167,21 +172,120 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure(Throwable _throwable) {
+            public void onFailure(Throwable _error) {
 
                 isApiRequestDone = false;
+
+                Log.e(mApiGet.LOG_TAG, "ON FAILURE");
+                Log.e(mApiGet.LOG_TAG, mSupport.printException(_error));
 
                 if (mSupport.checkIfDatabaseExists(MainActivity.this))
                     getDatabaseData();
                 else {
-                    Toast.makeText(MainActivity.this, "SERVER IS DEAD.\nTRY AGAIN LATER.\nSORRY. BYE-BYE.", Toast.LENGTH_LONG).show();
+                    mSupport.showToast(MainActivity.this, getResources().getString(R.string.s_fist_run_server));
                     finish();
                 }
-
-                Log.e(mApiGet.LOG_TAG, "ON FAILURE");
-                Log.e(mApiGet.LOG_TAG, mSupport.printException(_throwable));
             }
         });
+    }
+
+    private void getDatabaseData() {
+
+        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
+
+        final GetDataTask getDataTask = new GetDataTask(mDatabaseHelper);
+        getDataTask.setCallback(new GetDataTask.Callback() {
+            @Override
+            public void onSuccess(List<Bank> _result) {
+
+                mDatabaseBankList = _result;
+
+                Log.e(getDataTask.LOG_TAG, "ON SUCCESS.");
+
+                if (mDatabaseBankList != null) {
+                    Log.e(getDataTask.LOG_TAG, "BANKS COUNT : " + String.valueOf(mDatabaseBankList.size()));
+                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(0).toString());
+                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(mDatabaseBankList.size() - 1).toString());
+                }
+
+                if (isApiRequestSent) {
+                    if (isApiRequestDone) {
+
+                        mBankList = mSupport.getUnitedBanks(mApiBankList, mDatabaseBankList);
+                        if (!isRecyclerViewCreated) {
+                            initRecyclerView();
+                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
+                        } else {
+                            mBankAdapter.notifyDataSetChanged();
+                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
+                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
+                        }
+                        setDatabaseData();
+
+                    } else {
+                        mBankList = mDatabaseBankList;
+                        if (!isRecyclerViewCreated) {
+                            initRecyclerView();
+                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                            Log.e(LOG_TAG, "LIST = DATABASE.");
+                        } else {
+                            mBankAdapter.notifyDataSetChanged();
+                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
+                            Log.e(LOG_TAG, "LIST = DATABASE.");
+                        }
+                    }
+
+                } else {
+                    mBankList = mDatabaseBankList;
+                    if (!isRecyclerViewCreated) {
+                        initRecyclerView();
+                        Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
+                        Log.e(LOG_TAG, "LIST = DATABASE.");
+                    }
+                }
+
+                mDatabaseHelper.close();
+                getDataTask.releaseCallback();
+            }
+
+            @Override
+            public void onFailure(Throwable _error) {
+
+                Log.e(getDataTask.LOG_TAG, "ON FAILURE");
+                Log.e(getDataTask.LOG_TAG, mSupport.printException(_error));
+
+                getDataTask.releaseCallback();
+            }
+        });
+        getDataTask.execute();
+    }
+
+    private void setDatabaseData() {
+
+        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
+
+        final SetDataTask setDataTask = new SetDataTask(this, mDatabaseHelper, mBankList);
+        setDataTask.setCallback(new SetDataTask.Callback() {
+            @Override
+            public void onSuccess() {
+
+                Log.e(setDataTask.LOG_TAG, "ON SUCCESS.");
+
+                mDatabaseHelper.close();
+                setDataTask.releaseCallback();
+            }
+
+            @Override
+            public void onFailure(Throwable _error) {
+
+                Log.e(setDataTask.LOG_TAG, "ON FAILURE");
+                Log.e(setDataTask.LOG_TAG, mSupport.printException(_error));
+
+                setDataTask.releaseCallback();
+            }
+        });
+        setDataTask.execute();
     }
 
     private void initRecyclerView() {
@@ -199,14 +303,12 @@ public class MainActivity extends AppCompatActivity
                         isApiRequestSent = true;
                     }
 
-                    Toast.makeText(MainActivity.this, "REFRESH", Toast.LENGTH_SHORT).show();
-
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             mRefreshLayout.setRefreshing(false);
                         }
-                    }, 2000);
+                    }, Constants.TIME_2_SECONDS);
                 }
             });
         }
@@ -215,7 +317,7 @@ public class MainActivity extends AppCompatActivity
         mBankAdapter = new BankAdapter(this, mBankList);
         mRecyclerView.setAdapter(mBankAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
+        final int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);
         mRecyclerView.addItemDecoration(new SpacingDecoration(spacingInPixels));
 
         mBankAdapter.setBankHandler(this);
@@ -266,14 +368,19 @@ public class MainActivity extends AppCompatActivity
                 isHandlerSet = false;
                 Log.e(LOG_TAG, "HANDLER IS SET OFF.");
             }
-        } catch (Exception e) {
-            mSupport.printException(e);
+        } catch (Exception _error) {
+            mSupport.printException(_error);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (UpdateService.isServiceRunning) {
+            finish();
+            mSupport.showToast(this, getResources().getString(R.string.s_updating));
+        }
 
         isActivityRunning = true;
 
@@ -283,141 +390,47 @@ public class MainActivity extends AppCompatActivity
                 isHandlerSet = true;
                 Log.e(LOG_TAG, "HANDLER IS SET ON.");
             }
-        } catch (Exception e) {
-            mSupport.printException(e);
+        } catch (Exception _error) {
+            mSupport.printException(_error);
         }
-    }
-
-    private void setDatabaseData() {
-
-        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
-
-        final SetDataTask setDataTask = new SetDataTask(this, mDatabaseHelper, mBankList);
-        setDataTask.setCallback(new SetDataTask.Callback() {
-            @Override
-            public void success() {
-                Log.e(setDataTask.LOG_TAG, "ON SUCCESS.");
-
-                mDatabaseHelper.close();
-                setDataTask.releaseCallback();
-            }
-
-            @Override
-            public void failure(Throwable _error) {
-                // TODO: handle this ...
-            }
-        });
-        setDataTask.execute();
-    }
-
-    private void getDatabaseData() {
-
-        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
-
-        final GetDataTask getDataTask = new GetDataTask(mDatabaseHelper);
-        getDataTask.setCallback(new GetDataTask.Callback() {
-            @Override
-            public void success(List<Bank> _result) {
-                mDatabaseBankList = _result;
-
-                Log.e(getDataTask.LOG_TAG, "ON SUCCESS.");
-
-                if (mDatabaseBankList != null) {
-                    Log.e(getDataTask.LOG_TAG, "BANKS COUNT : " + String.valueOf(mDatabaseBankList.size()));
-                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(0).toString());
-                    Log.e(getDataTask.LOG_TAG, mDatabaseBankList.get(mDatabaseBankList.size() - 1).toString());
-                }
-
-                if (isApiRequestSent) {
-
-                    if (isApiRequestDone) {
-
-                        mBankList = mSupport.getUnitedBanks(mApiBankList, mDatabaseBankList);
-                        if (!isRecyclerViewCreated) {
-                            initRecyclerView();
-                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
-                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
-                        } else {
-                            mBankAdapter.notifyDataSetChanged();
-                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
-                            Log.e(LOG_TAG, "LIST = API + DATABASE.");
-                        }
-
-                        setDatabaseData();
-
-                    } else {
-
-                        mBankList = mDatabaseBankList;
-                        if (!isRecyclerViewCreated) {
-                            initRecyclerView();
-                            Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
-                            Log.e(LOG_TAG, "LIST = DATABASE.");
-                        } else {
-                            mBankAdapter.notifyDataSetChanged();
-                            Log.e(LOG_TAG, "RECYCLER VIEW UPDATED.");
-                            Log.e(LOG_TAG, "LIST = DATABASE.");
-                        }
-                    }
-
-                } else {
-
-                    mBankList = mDatabaseBankList;
-                    if (!isRecyclerViewCreated) {
-                        initRecyclerView();
-                        Log.e(LOG_TAG, "RECYCLER VIEW CREATED.");
-                        Log.e(LOG_TAG, "LIST = DATABASE.");
-                    }
-                }
-
-                mDatabaseHelper.close();
-                getDataTask.releaseCallback();
-            }
-
-            @Override
-            public void failure(Throwable _error) {
-                // TODO: handle this ...
-            }
-        });
-        getDataTask.execute();
     }
 
     @Override
     public void goToLink(String _link) {
-        Toast.makeText(MainActivity.this, _link, Toast.LENGTH_SHORT).show();
 
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(_link));
-
+        final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(_link));
         if (browserIntent.resolveActivity(getPackageManager()) != null)
-            startActivity(Intent.createChooser(browserIntent, "Choose browser:"));
+            startActivity(Intent.createChooser(browserIntent, getResources().getString(R.string.choose_program)));
+        else
+            mSupport.showToast(this, getResources().getString(R.string.necessary_program));
     }
 
     @Override
     public void showOnMap(String _region, String _city, String _address) {
 
-        Intent addressIntent = new Intent(Intent.ACTION_VIEW,Uri.parse("geo:0,0?q=" + _region + ", " + _city + ", " + _address));
-
+        final Intent addressIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(Constants.GEO + _region + ", " + _city + ", " + _address));
         if (addressIntent.resolveActivity(getPackageManager()) != null)
-            startActivity(Intent.createChooser(addressIntent, "Choose program to show on map:"));
+            startActivity(Intent.createChooser(addressIntent, getResources().getString(R.string.choose_program)));
         else
-            Toast.makeText(MainActivity.this, "You have no maps program", Toast.LENGTH_SHORT).show();
+            mSupport.showToast(this, getResources().getString(R.string.necessary_program));
     }
 
     @Override
     public void callPhone(String _phone) {
-        Toast.makeText(MainActivity.this, _phone, Toast.LENGTH_SHORT).show();
 
-        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:+38" + _phone));
-
+        final Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(Constants.TEL + _phone));
         if (callIntent.resolveActivity(getPackageManager()) != null)
-            startActivity(Intent.createChooser(callIntent, "Choose how to call:"));
+            startActivity(Intent.createChooser(callIntent, getResources().getString(R.string.choose_program)));
+        else
+            mSupport.showToast(this, getResources().getString(R.string.necessary_program));
     }
 
     @Override
     public void showDetails(Bank _bank) {
 
-        Intent detailsActivityIntent = new Intent(this, DetailsActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("bank", _bank);
+        final Intent detailsActivityIntent = new Intent(this, DetailsActivity.class);
+        final Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.BANK_BUNDLE_KEY, _bank);
         detailsActivityIntent.putExtras(bundle);
         startActivity(detailsActivityIntent);
     }

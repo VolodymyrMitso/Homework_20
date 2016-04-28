@@ -16,10 +16,10 @@
     <color name="c_shadow">#9c9c9c</color>
     <color name="c_line">#e1e1e1</color>
 
-
     <color name="c_share_currency">#8c0d4a</color>
     <color name="c_share_btn_text">#f03e79</color>
     <color name="c_share_btn_bg">#afbfc4</color>
 
-
+    <color name="c_toast_bg">#35464d</color>
+    <color name="c_toast_text">#ededed</color>
 </resources>

@@ -3,7 +3,9 @@ package mitso.v.homework_20.support;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
+import android.view.Gravity;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -13,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import mitso.v.homework_20.R;
 import mitso.v.homework_20.api.models.Bank;
 import mitso.v.homework_20.api.models.Currency;
 import mitso.v.homework_20.api.models.json.JsonCurrency;
@@ -20,7 +23,7 @@ import mitso.v.homework_20.api.models.json.JsonData;
 import mitso.v.homework_20.api.models.json.JsonOrganization;
 import mitso.v.homework_20.databse.DatabaseHelper;
 
-public class Support {
+public class SupportMain {
 
     public boolean checkIfDatabaseExists(Context _context) {
 
@@ -106,18 +109,11 @@ public class Support {
 
         List<Bank> unitedBanks = new ArrayList<>();
 
-        Log.e("LIST", String.valueOf(unitedBanks.size()));
-
         unitedBanks.addAll(databaseBanks);
-
-        Log.e("LIST", String.valueOf(unitedBanks.size()));
 
         for (Bank apiBank : apiBanks)
             if (!unitedBanks.contains(apiBank))
                 unitedBanks.add(apiBank);
-
-        Log.e("LIST", String.valueOf(unitedBanks.size()));
-
 
         for (int i = 0; i < unitedBanks.size(); i++) {
             for (int j = 0; j < unitedBanks.size(); ) {
@@ -134,16 +130,12 @@ public class Support {
                         j = 0;
                         i = 0;
 
-                        Log.e("LIST", String.valueOf(unitedBanks.size()));
-
                     } else
                         j++;
                 } else
                     j++;
             }
         }
-
-        Log.e("LIST", String.valueOf(unitedBanks.size()));
 
         Collections.sort(unitedBanks, new Comparator<Bank>() {
             @Override
@@ -153,5 +145,21 @@ public class Support {
         });
 
         return unitedBanks;
+    }
+
+    public void showToast(Context _context, String _string) {
+
+        final TextView textView = new TextView(_context);
+        textView.setBackgroundColor(_context.getResources().getColor(R.color.c_toast_bg));
+        textView.setTextColor(_context.getResources().getColor(R.color.c_toast_text));
+        textView.setText(_string);
+        final int padding = _context.getResources().getDimensionPixelSize(R.dimen.d_size_15dp);
+        textView.setPadding(padding, padding, padding, padding);
+
+        final Toast toast = new Toast(_context);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.setView(textView);
+        toast.show();
     }
 }

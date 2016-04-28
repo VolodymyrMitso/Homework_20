@@ -5,16 +5,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import mitso.v.homework_20.constansts.Constants;
+
 public class Bank implements Serializable {
 
-    private String name;
-    private String region;
-    private String city;
-    private String address;
-    private String phone;
-    private String link;
-    private List<Currency> currencies;
-    private Date date;
+    private String          name;
+    private String          region;
+    private String          city;
+    private String          address;
+    private String          phone;
+    private String          link;
+    private List<Currency>  currencies;
+    private Date            date;
 
     @Override
     public String toString() {
@@ -25,7 +27,7 @@ public class Bank implements Serializable {
                         "address = " + address + "\n" +
                         "phone = " + phone + "\n" +
                         "link = " + link + "\n" +
-                        "date = " + new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(date) + "\n" +
+                        "date = " + new SimpleDateFormat(Constants.DATE_AND_TIME_FORMAT_OUT).format(date) + "\n" +
                         "currencies = \n";
         for (int i = 0; i < currencies.size(); i++)
             result += currencies.get(i).toString();

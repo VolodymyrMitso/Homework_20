@@ -4,9 +4,17 @@ import java.io.Serializable;
 
 public class JsonCurrency implements Serializable {
 
-    private String name;
-    private String ask;
-    private String bid;
+    private String      name;
+    private String      ask;
+    private String      bid;
+
+    @Override
+    public String toString() {
+        return  "       CURRENCY INFO:\n" +
+                "       name = " + name + "\n" +
+                "       ask = " + ask + "\n" +
+                "       bid = " + bid + "\n";
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -30,13 +38,5 @@ public class JsonCurrency implements Serializable {
 
     public String getBid() {
         return bid;
-    }
-
-    @Override
-    public String toString() {
-        return  "       CURRENCY INFO:\n" +
-                "       name = " + name + "\n" +
-                "       ask = " + ask + "\n" +
-                "       bid = " + bid + "\n";
     }
 }

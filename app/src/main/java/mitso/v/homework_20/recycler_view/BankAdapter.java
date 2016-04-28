@@ -24,47 +24,47 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
     }
 
     @Override
-    public BankViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bank_card, parent, false);
+    public BankViewHolder onCreateViewHolder(ViewGroup _parent, int _viewType) {
+        final View itemView = LayoutInflater.from(_parent.getContext()).inflate(R.layout.bank_card, _parent, false);
         return new BankViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(BankViewHolder holder, final int position) {
+    public void onBindViewHolder(BankViewHolder _holder, final int _position) {
 
-        final Bank bank = mBankList.get(position);
+        final Bank bank = mBankList.get(_position);
 
-        holder.getTextView_BankName().setText(bank.getName());
+        _holder.getTextView_BankName().setText(bank.getName());
         if (bank.getRegion().equals(mContext.getResources().getString(R.string.s_capital)))
-            holder.getTextView_BankRegion().setText(mContext.getResources().getString(R.string.s_region));
+            _holder.getTextView_BankRegion().setText(mContext.getResources().getString(R.string.s_region));
         else
-            holder.getTextView_BankRegion().setText(bank.getRegion());
-        holder.getTextView_BankCity().setText(bank.getCity());
-        holder.getTextView_BankPhone().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_phone), bank.getPhone()));
-        holder.getTextView_BankAddress().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_address), bank.getAddress()));
+            _holder.getTextView_BankRegion().setText(bank.getRegion());
+        _holder.getTextView_BankCity().setText(bank.getCity());
+        _holder.getTextView_BankPhone().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_phone), bank.getPhone()));
+        _holder.getTextView_BankAddress().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_address), bank.getAddress()));
 
-        holder.getImageButton_Link().setOnClickListener(new View.OnClickListener() {
+        _holder.getImageButton_Link().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.goToLink(bank.getLink());
             }
         });
 
-        holder.getImageButton_Map().setOnClickListener(new View.OnClickListener() {
+        _holder.getImageButton_Map().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.showOnMap(bank.getRegion(), bank.getCity(), bank.getAddress());
             }
         });
 
-        holder.getImageButton_Phone().setOnClickListener(new View.OnClickListener() {
+        _holder.getImageButton_Phone().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.callPhone(bank.getPhone());
             }
         });
 
-        holder.getImageButton_Details().setOnClickListener(new View.OnClickListener() {
+        _holder.getImageButton_Details().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.showDetails(bank);
@@ -77,33 +77,27 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
         return mBankList.size();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    public void setModels(List<Bank> _bankList) {
-        mBankList = new ArrayList<>(_bankList);
-    }
-
-    public Bank removeItem(int position) {
-        final Bank bank = mBankList.remove(position);
-        notifyItemRemoved(position);
+    public Bank removeItem(int _position) {
+        final Bank bank = mBankList.remove(_position);
+        notifyItemRemoved(_position);
         return bank;
     }
 
-    public void addItem(int position, Bank bank) {
-        mBankList.add(position, bank);
-        notifyItemInserted(position);
+    public void addItem(int _position, Bank _bank) {
+        mBankList.add(_position, _bank);
+        notifyItemInserted(_position);
     }
 
-    public void moveItem(int fromPosition, int toPosition) {
-        final Bank bank = mBankList.remove(fromPosition);
-        mBankList.add(toPosition, bank);
-        notifyItemMoved(fromPosition, toPosition);
+    public void moveItem(int _fromPosition, int _toPosition) {
+        final Bank bank = mBankList.remove(_fromPosition);
+        mBankList.add(_toPosition, bank);
+        notifyItemMoved(_fromPosition, _toPosition);
     }
 
-    public void animateTo(List<Bank> bankList) {
-        applyAndAnimateRemovals(bankList);
-        applyAndAnimateAdditions(bankList);
-        applyAndAnimateMovedItems(bankList);
+    public void animateTo(List<Bank> _bankList) {
+        applyAndAnimateRemovals(_bankList);
+        applyAndAnimateAdditions(_bankList);
+        applyAndAnimateMovedItems(_bankList);
     }
 
     private void applyAndAnimateRemovals(List<Bank> _bankList) {
@@ -134,10 +128,8 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    public void setBankHandler(IBankHandler bankHandler) {
-        this.mBankHandler = bankHandler;
+    public void setBankHandler(IBankHandler _bankHandler) {
+        this.mBankHandler = _bankHandler;
     }
 
     public void releaseBankHandler() {
