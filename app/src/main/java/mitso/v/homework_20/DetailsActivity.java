@@ -98,12 +98,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             Currency currency = _currencyList.get(i);
 
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-
             RelativeLayout relativeLayout = new RelativeLayout(this);
-            relativeLayout.setLayoutParams(layoutParams);
             relativeLayout.setPadding(0, getResources().getDimensionPixelOffset(R.dimen.d_size_7dp),
                     0, getResources().getDimensionPixelOffset(R.dimen.d_size_7dp));
 
@@ -114,6 +109,7 @@ public class DetailsActivity extends AppCompatActivity {
             nameParams.addRule(RelativeLayout.CENTER_VERTICAL);
 
             TextView name = new TextView(this);
+            name.setTextSize(15);
             name.setTextColor(getResources().getColor(R.color.c_text));
             name.setTypeface(Typeface.DEFAULT_BOLD);
             name.setText(String.format("%s%s", currency.getName().substring(0, 1).toUpperCase(), currency.getName().substring(1)));
@@ -128,6 +124,7 @@ public class DetailsActivity extends AppCompatActivity {
             purchaseParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
             TextView purchase = new TextView(this);
+            purchase.setTextSize(15);
             purchase.setTextColor(getResources().getColor(R.color.c_text));
             purchase.setTypeface(Typeface.DEFAULT_BOLD);
             purchase.setText(String.format("%.4f", currency.getPurchase()));
@@ -144,6 +141,7 @@ public class DetailsActivity extends AppCompatActivity {
             saleParams.addRule(RelativeLayout.BELOW, 1);
 
             TextView sale = new TextView(this);
+            sale.setTextSize(15);
             sale.setTextColor(getResources().getColor(R.color.c_text));
             sale.setTypeface(Typeface.DEFAULT_BOLD);
             sale.setText(String.format("%.4f", currency.getSale()));
@@ -239,17 +237,6 @@ public class DetailsActivity extends AppCompatActivity {
 
                 LinearLayout linearLayout = createLayout(mBank);
 
-//                linearLayout.setDrawingCacheEnabled(true);
-//
-//                linearLayout.measure(View.MeasureSpec.makeMeasureSpec(
-//                        0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//                linearLayout.layout(0, 0, linearLayout.getMeasuredWidth(), linearLayout.getMeasuredHeight());
-//
-//                linearLayout.buildDrawingCache(true);
-//                Bitmap bitmap = Bitmap.createBitmap(linearLayout.getDrawingCache());
-//
-//                linearLayout.setDrawingCacheEnabled(false);
-
                 linearLayout.layout(0, 0, linearLayout.getMeasuredWidth(), linearLayout.getMeasuredHeight());
 
                 Bitmap bitmap = loadBitmapFromView(linearLayout);
@@ -285,45 +272,119 @@ public class DetailsActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-//        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout.setBackgroundColor(getResources().getColor(R.color.c_view_bg));
+        linearLayout.setPadding(
+                getResources().getDimensionPixelOffset(R.dimen.d_size_20dp),
+                getResources().getDimensionPixelOffset(R.dimen.d_size_20dp),
+                getResources().getDimensionPixelOffset(R.dimen.d_size_20dp),
+                getResources().getDimensionPixelOffset(R.dimen.d_size_20dp)
+        );
 
         TextView name = new TextView(this);
-//        name.setLayoutParams(textViewParams);
         name.setTextColor(getResources().getColor(R.color.c_title));
         name.setText(_bank.getName());
         name.setTextSize(21);
         name.setGravity(Gravity.START);
 
         TextView region = new TextView(this);
-//        region.setLayoutParams(textViewParams);
         region.setTextColor(getResources().getColor(R.color.c_subtitle));
-        region.setText(_bank.getRegion());
+        if (mBank.getRegion().equals(getResources().getString(R.string.s_capital)))
+            region.setText(getResources().getString(R.string.s_region));
+        else
+            region.setText(mBank.getRegion());
         region.setTextSize(17);
         region.setGravity(Gravity.START);
 
-        linearLayout.addView(name);
-        linearLayout.addView(region);
-
-//        LinearLayout.LayoutParams textViewParamsWithMargins = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT);
-
-//        textViewParamsWithMargins.setMargins(0,0,0,getResources().getDimensionPixelOffset(R.dimen.d_size_30dp));
-
         TextView city = new TextView(this);
-//        city.setLayoutParams(textViewParamsWithMargins);
         city.setTextColor(getResources().getColor(R.color.c_subtitle));
         city.setText(_bank.getCity());
         city.setTextSize(17);
         city.setGravity(Gravity.START);
 
-        linearLayout.addView(city);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                layoutWidth/3*2,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        createCurrencyCard(linearLayout, _bank.getCurrencies());
+        layoutParams.setMargins(0,getResources().getDimensionPixelOffset(R.dimen.d_size_10dp),0,getResources().getDimensionPixelOffset(R.dimen.d_size_10dp));
+
+        TextView date = new TextView(this);
+        date.setLayoutParams(layoutParams);
+
+        date.setTextColor(getResources().getColor(R.color.c_title_pink));
+        date.setText(new SimpleDateFormat("dd MMMM yyyy - HH:mm:ss").format(_bank.getDate()) );
+        date.setTextSize(17);
+        date.setGravity(Gravity.CENTER);
+
+        linearLayout.addView(name);
+        linearLayout.addView(region);
+        linearLayout.addView(city);
+        linearLayout.addView(date);
+
+        createCurrencyLayouts(linearLayout, _bank.getCurrencies());
 
         return linearLayout;
+    }
+
+    private void createCurrencyLayouts(LinearLayout _linearLayout, List<Currency> _currencyList) {
+
+        for (int i = 0; i < _currencyList.size(); i++) {
+
+            Currency currency = _currencyList.get(i);
+
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+            RelativeLayout relativeLayout = new RelativeLayout(this);
+            relativeLayout.setLayoutParams(layoutParams);
+            relativeLayout.setPadding(0, getResources().getDimensionPixelOffset(R.dimen.d_size_7dp),
+                    0, getResources().getDimensionPixelOffset(R.dimen.d_size_7dp));
+
+            RelativeLayout.LayoutParams nameParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            nameParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            nameParams.addRule(RelativeLayout.CENTER_VERTICAL);
+
+            TextView abbreviation = new TextView(this);
+            abbreviation.setTextColor(getResources().getColor(R.color.c_share_currency));
+            abbreviation.setText(currency.getAbbreviation());
+            abbreviation.setTextSize(19);
+            abbreviation.setTypeface(Typeface.DEFAULT_BOLD);
+
+            abbreviation.setLayoutParams(nameParams);
+            relativeLayout.addView(abbreviation);
+
+            RelativeLayout.LayoutParams purchaseParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+            purchaseParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            purchaseParams.addRule(RelativeLayout.CENTER_VERTICAL);
+
+            TextView purchaseAndSale = new TextView(this);
+            purchaseAndSale.setTextColor(getResources().getColor(R.color.c_text));
+
+            String purchase;
+            if (currency.getPurchase() < 10)
+                purchase = "0" + String.format("%.2f", currency.getPurchase());
+            else
+                purchase = String.format("%.2f", currency.getPurchase());
+
+
+            String sale;
+            if (currency.getSale() < 10)
+                sale = "0" + String.format("%.2f", currency.getSale());
+            else
+                sale = String.format("%.2f", currency.getSale());
+
+            purchaseAndSale.setText(String.format("%s/%s", purchase, sale));
+            purchaseAndSale.setTextSize(19);
+
+
+            purchaseAndSale.setLayoutParams(purchaseParams);
+            relativeLayout.addView(purchaseAndSale);
+
+            _linearLayout.addView(relativeLayout);
+        }
     }
 }

@@ -5,8 +5,17 @@ import java.io.Serializable;
 public class Currency implements Serializable {
 
     private String name;
+    private String abbreviation;
     private double sale;
     private double purchase;
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
 
     public String getName() {
         return name;
@@ -36,6 +45,7 @@ public class Currency implements Serializable {
     public String toString() {
         return  "    ----- CURRENCY INFO:\n" +
                 "    name = " + name + "\n" +
+                "    abbreviation = " + abbreviation + "\n" +
                 "    sale = " + sale + "\n" +
                 "    purchase = " + purchase + "\n";
     }

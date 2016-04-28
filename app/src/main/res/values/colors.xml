@@ -3,8 +3,6 @@
     <color name="c_status_bar">#35464d</color>
     <color name="c_action_bar_bg">#536d78</color>
     <color name="c_action_bar_text">#dae0e0</color>
-
-    <color name="colorAccent">#000000</color>
     
     <color name="c_view_bg">#ededed</color>
 

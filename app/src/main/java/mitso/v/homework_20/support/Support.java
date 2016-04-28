@@ -63,6 +63,7 @@ public class Support {
                     JsonCurrency jsonCurrency = jsonCurrencies.get(j);
                     Currency currency = new Currency();
                     currency.setName(currenciesNamesAbbreviations.get(jsonCurrency.getName()));
+                    currency.setAbbreviation(jsonCurrency.getName());
                     currency.setSale(Double.parseDouble(jsonCurrency.getAsk()));
                     currency.setPurchase(Double.parseDouble(jsonCurrency.getBid()));
                     currencies.add(currency);
