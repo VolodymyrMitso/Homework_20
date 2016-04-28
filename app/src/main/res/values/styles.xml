@@ -4,7 +4,8 @@
 
         <item name="colorPrimary">@color/c_action_bar_bg</item>
         <item name="colorPrimaryDark">@color/c_status_bar</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/c_status_bar</item>
+        <item name="android:textColor">@color/c_status_bar</item>
     </style>
 
 </resources>

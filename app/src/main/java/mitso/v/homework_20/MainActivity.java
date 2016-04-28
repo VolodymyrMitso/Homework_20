@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.menu, menu);
-        final MenuItem item = menu.findItem(R.id.mi_Search);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        final MenuItem item = menu.findItem(R.id.mi_Search_MM);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
         searchView.setOnQueryTextListener(this);
 

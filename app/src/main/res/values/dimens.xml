@@ -10,4 +10,6 @@
     <dimen name="d_size_40dp">40dp</dimen>
     <dimen name="d_size_2dp">2dp</dimen>
     <dimen name="d_size_1dp">1dp</dimen>
+    <dimen name="d_size_50dp">50dp</dimen>
+    <dimen name="d_size_30dp">30dp</dimen>
 </resources>

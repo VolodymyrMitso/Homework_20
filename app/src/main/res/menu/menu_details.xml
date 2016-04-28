@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title=""
+        android:icon="@drawable/ic_details_menu"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/mi_Link_c"
+                android:icon="@drawable/ic_details_link"
+                android:title="@string/s_go_to_link"/>
+
+            <item
+                android:id="@+id/mi_Map_DM"
+                android:icon="@drawable/ic_details_map"
+                android:title="@string/s_show_on_map"/>
+
+            <item
+                android:id="@+id/mi_Phone_DM"
+                android:icon="@drawable/ic_details_phone"
+                android:title="@string/s_call_phone"/>
+
+            <item
+                android:id="@+id/mi_Share_DM"
+                android:icon="@drawable/ic_details_share"
+                android:title="@string/s_share_picture"/>
+        </menu>
+
+    </item>
+
+</menu>

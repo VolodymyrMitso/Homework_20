@@ -7,4 +7,9 @@
 
     <string name="s_capital">Киев</string>
     <string name="s_region">Киевская область</string>
+
+    <string name="s_go_to_link">Перейти по ссылке</string>
+    <string name="s_show_on_map">Показать на карте</string>
+    <string name="s_call_phone">Позвонить по номеру</string>
+    <string name="s_share_picture">Поделиться картинкой</string>
 </resources>
