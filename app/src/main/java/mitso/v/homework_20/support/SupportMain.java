@@ -153,6 +153,7 @@ public class SupportMain {
         textView.setBackgroundColor(_context.getResources().getColor(R.color.c_toast_bg));
         textView.setTextColor(_context.getResources().getColor(R.color.c_toast_text));
         textView.setText(_string);
+        textView.setGravity(Gravity.CENTER);
         final int padding = _context.getResources().getDimensionPixelSize(R.dimen.d_size_15dp);
         textView.setPadding(padding, padding, padding, padding);
 
