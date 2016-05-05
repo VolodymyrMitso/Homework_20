@@ -45,7 +45,7 @@ public class UpdateService extends IntentService {
     protected void onHandleIntent(Intent _intent) {
 
         isServiceRunning = true;
-        Log.e(LOG_TAG, "SERVICE IS RUNNING");
+        Log.e(LOG_TAG, "SERVICE - START");
 
         mSupport = new SupportMain();
 
@@ -55,12 +55,28 @@ public class UpdateService extends IntentService {
             public void run() {
 
                 if (!MainActivity.isActivityRunning && !DetailsActivity.isActivityRunning) {
-                    if (mSupport.checkConnection(getApplicationContext()))
+
+                    Log.e(LOG_TAG, "ACTIVITIES ARE NOT RUNNING");
+
+                    if (mSupport.checkConnection(getApplicationContext())) {
+
+                        Log.e(LOG_TAG, "CONNECTION - YES");
                         apiGetData();
-                    else
+
+                    } else {
+
+                        Log.e(LOG_TAG, "CONNECTION - NO");
+                        Log.e(LOG_TAG, "SERVICE - STOP");
                         isServiceRunning = false;
-                } else
+                    }
+
+                } else {
+
+                    Log.e(LOG_TAG, "ACTIVITIES ARE RUNNING");
+                    Log.e(LOG_TAG, "SERVICE - STOP");
                     isServiceRunning = false;
+                }
+
             }
         });
     }
@@ -98,6 +114,7 @@ public class UpdateService extends IntentService {
                     Log.e(mApiGet.LOG_TAG, "ON FAILURE");
                     Log.e(mApiGet.LOG_TAG, mSupport.printException(_error));
 
+                    Log.e(LOG_TAG, "SERVICE - STOP");
                     isServiceRunning = false;
                 }
             });
@@ -107,6 +124,7 @@ public class UpdateService extends IntentService {
             Log.e(LOG_TAG, "API GET ERROR");
             Log.e(LOG_TAG, mSupport.printException(_error));
 
+            Log.e(LOG_TAG, "SERVICE - STOP");
             isServiceRunning = false;
         }
     }
@@ -147,6 +165,7 @@ public class UpdateService extends IntentService {
                     mDatabaseHelper.close();
                     getDataTask.releaseCallback();
 
+                    Log.e(LOG_TAG, "SERVICE - STOP");
                     isServiceRunning = false;
                 }
             });
@@ -157,6 +176,7 @@ public class UpdateService extends IntentService {
             Log.e(LOG_TAG, "GET DATA TASK ERROR");
             Log.e(LOG_TAG, mSupport.printException(_error));
 
+            Log.e(LOG_TAG, "SERVICE - STOP");
             isServiceRunning = false;
         }
     }
@@ -176,6 +196,7 @@ public class UpdateService extends IntentService {
                     mDatabaseHelper.close();
                     setDataTask.releaseCallback();
 
+                    Log.e(LOG_TAG, "SERVICE - STOP");
                     isServiceRunning = false;
                 }
 
@@ -188,6 +209,7 @@ public class UpdateService extends IntentService {
                     mDatabaseHelper.close();
                     setDataTask.releaseCallback();
 
+                    Log.e(LOG_TAG, "SERVICE - STOP");
                     isServiceRunning = false;
                 }
             });
@@ -198,6 +220,7 @@ public class UpdateService extends IntentService {
             Log.e(LOG_TAG, "SET DATA TASK ERROR");
             Log.e(LOG_TAG, mSupport.printException(_error));
 
+            Log.e(LOG_TAG, "SERVICE - STOP");
             isServiceRunning = false;
         }
     }
