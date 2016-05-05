@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         if (UpdateService.isServiceRunning) {
-            finish();
             mSupport.showToast(this, getResources().getString(R.string.s_updating));
+            finish();
         }
 
         isActivityRunning = true;
@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e(getDataTask.LOG_TAG, "ON FAILURE");
                 Log.e(getDataTask.LOG_TAG, mSupport.printException(_error));
 
+                mDatabaseHelper.close();
                 getDataTask.releaseCallback();
             }
         });
@@ -282,6 +283,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e(setDataTask.LOG_TAG, "ON FAILURE");
                 Log.e(setDataTask.LOG_TAG, mSupport.printException(_error));
 
+                mDatabaseHelper.close();
                 setDataTask.releaseCallback();
             }
         });
@@ -378,8 +380,8 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         if (UpdateService.isServiceRunning) {
-            finish();
             mSupport.showToast(this, getResources().getString(R.string.s_updating));
+            finish();
         }
 
         isActivityRunning = true;

@@ -28,6 +28,7 @@ public class Constants {
     public static final String GET_DATA_TASK_LOG_TAG        = "GET_DATA_TASK_LOG_TAG";
     public static final String SET_DATA_TASK_LOG_TAG        = "SET_DATA_TASK_LOG_TAG";
     public static final String MAIN_ACTIVITY_LOG_TAG        = "MAIN_ACTIVITY_LOG_TAG";
+    public static final String UPDATE_SERVICE_LOG_TAG       = "UPDATE_SERVICE_LOG_TAG";
     public static final String SHARE_DIALOG_FRAGMENT_TAG    = "SHARE_DIALOG_FRAGMENT_TAG";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

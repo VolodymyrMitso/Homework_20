@@ -35,8 +35,8 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (UpdateService.isServiceRunning) {
-            finish();
             mSupport.showToast(this, getResources().getString(R.string.s_updating));
+            finish();
         }
 
         isActivityRunning = true;
@@ -115,8 +115,8 @@ public class DetailsActivity extends AppCompatActivity {
         super.onResume();
 
         if (UpdateService.isServiceRunning) {
-            finish();
             mSupport.showToast(this, getResources().getString(R.string.s_updating));
+            finish();
         }
 
         isActivityRunning = true;
