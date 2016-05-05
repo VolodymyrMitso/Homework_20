@@ -53,6 +53,7 @@ public class SupportMain {
 
                 JsonOrganization jsonOrganization = jsonOrganizations.get(i);
                 Bank bank = new Bank();
+                bank.setId(jsonOrganization.getId());
                 bank.setName(jsonOrganization.getTitle());
                 bank.setRegion(regionsNamesIds.get(jsonOrganization.getRegionId()));
                 bank.setCity(citiesNamesIds.get(jsonOrganization.getCityId()));
@@ -120,11 +121,7 @@ public class SupportMain {
                 Bank bankI = unitedBanks.get(i);
                 Bank bankJ = unitedBanks.get(j);
                 if (i != j) {
-                    if (bankI.getName().equals(bankJ.getName())
-                            && bankI.getRegion().equals(bankJ.getRegion())
-                            && bankI.getCity().equals(bankJ.getCity())
-                            && bankI.getAddress().equals(bankJ.getAddress())
-                            && bankI.getDate().after(bankJ.getDate())) {
+                    if (bankI.getId().equals(bankJ.getId()) && bankI.getDate().after(bankJ.getDate())) {
 
                         unitedBanks.remove(j);
                         j = 0;

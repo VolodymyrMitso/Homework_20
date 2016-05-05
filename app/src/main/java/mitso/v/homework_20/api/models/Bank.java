@@ -9,6 +9,7 @@ import mitso.v.homework_20.constansts.Constants;
 
 public class Bank implements Serializable {
 
+    private String          id;
     private String          name;
     private String          region;
     private String          city;
@@ -21,6 +22,7 @@ public class Bank implements Serializable {
     @Override
     public String toString() {
         String result = "----- BANK INFO\n" +
+                        "id = " + id + "\n" +
                         "name = " + name + "\n" +
                         "region = " + region + "\n" +
                         "city = " + city + "\n" +
@@ -37,26 +39,28 @@ public class Bank implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (!(o instanceof Bank)) return false;
 
         Bank bank = (Bank) o;
 
-        return  getName().equals(bank.getName())
-                && getRegion().equals(bank.getRegion())
-                && getCity().equals(bank.getCity())
-                && getAddress().equals(bank.getAddress())
-                && getDate().equals(bank.getDate());
+        return getId().equals(bank.getId()) && getDate().equals(bank.getDate());
     }
 
     @Override
     public int hashCode() {
-        int result = getName().hashCode();
-        result = 31 * result + getRegion().hashCode();
-        result = 31 * result + getCity().hashCode();
-        result = 31 * result + getAddress().hashCode();
+        int result = getId().hashCode();
         result = 31 * result + getDate().hashCode();
         return result;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setName(String name) {

@@ -14,17 +14,17 @@ import mitso.v.homework_20.constansts.Constants;
 
 public class GetDataTask extends AsyncTask<Void, Void, List<Bank>> {
 
-    public String LOG_TAG = Constants.GET_DATA_TASK_LOG_TAG;
+    public String           LOG_TAG = Constants.GET_DATA_TASK_LOG_TAG;
 
     public interface Callback{
         void onSuccess(List<Bank> _result);
         void onFailure(Throwable _error);
     }
 
-    private DatabaseHelper mDatabaseHelper;
-    private List<Bank> mBankList;
-    private Callback mCallback;
-    private Exception mException;
+    private DatabaseHelper  mDatabaseHelper;
+    private List<Bank>      mBankList;
+    private Callback        mCallback;
+    private Exception       mException;
 
     public GetDataTask(DatabaseHelper mDatabaseHelper) {
         this.mDatabaseHelper = mDatabaseHelper;

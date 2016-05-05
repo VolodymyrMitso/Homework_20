@@ -16,18 +16,18 @@ import mitso.v.homework_20.support.SupportMain;
 
 public class SetDataTask extends AsyncTask<Void, Void, Void> {
 
-    public String LOG_TAG = Constants.SET_DATA_TASK_LOG_TAG;
+    public String           LOG_TAG = Constants.SET_DATA_TASK_LOG_TAG;
 
     public interface Callback{
         void onSuccess();
         void onFailure(Throwable _error);
     }
 
-    private Context mContext;
-    private DatabaseHelper mDatabaseHelper;
-    private List<Bank> mBankList;
-    private Callback mCallback;
-    private Exception mException;
+    private Context         mContext;
+    private DatabaseHelper  mDatabaseHelper;
+    private List<Bank>      mBankList;
+    private Callback        mCallback;
+    private Exception       mException;
 
     public void setCallback(Callback _callback) {
         mCallback = _callback;
@@ -49,7 +49,7 @@ public class SetDataTask extends AsyncTask<Void, Void, Void> {
         try {
             if (new SupportMain().checkIfDatabaseExists(mContext)) {
 
-                Log.e(LOG_TAG, "REWRITE DATABASE.");
+                Log.e(LOG_TAG, "REWRITING DATABASE.");
 
                 SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 

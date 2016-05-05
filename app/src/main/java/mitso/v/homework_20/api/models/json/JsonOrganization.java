@@ -85,13 +85,13 @@ public class JsonOrganization implements Serializable, IModelResponse {
 
     @Override
     public String toString() {
-        String result = "   ORGANIZATION INFO:" +
+        String result = "   ORGANIZATION INFO:\n" +
                         "   id = " + id + "\n" +
                         "   oldId = " + oldId + "\n" +
                         "   orgType = " + orgType + "\n" +
                         "   branch = " + branch + "\n" +
                         "   title = " + title + "\n" +
-                        "   regionId =" + regionId + "\n" +
+                        "   regionId = " + regionId + "\n" +
                         "   cityId = " + cityId + "\n" +
                         "   phone = " + phone + "\n" +
                         "   address = " + address + "\n" +

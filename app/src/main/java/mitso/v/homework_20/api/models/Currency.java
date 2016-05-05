@@ -6,8 +6,8 @@ public class Currency implements Serializable {
 
     private String name;
     private String abbreviation;
-    private double sale;
     private double purchase;
+    private double sale;
 
     public String getAbbreviation() {
         return abbreviation;
@@ -46,7 +46,7 @@ public class Currency implements Serializable {
         return  "    ----- CURRENCY INFO:\n" +
                 "    name = " + name + "\n" +
                 "    abbreviation = " + abbreviation + "\n" +
-                "    sale = " + sale + "\n" +
-                "    purchase = " + purchase + "\n";
+                "    purchase = " + purchase + "\n" +
+                "    sale = " + sale + "\n";
     }
 }
