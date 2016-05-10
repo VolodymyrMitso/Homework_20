@@ -1,6 +1,7 @@
 package mitso.v.homework_20;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,26 +10,26 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import java.text.SimpleDateFormat;
 
 import mitso.v.homework_20.api.models.Bank;
 import mitso.v.homework_20.constansts.Constants;
+import mitso.v.homework_20.databinding.DetailsActivityBinding;
 import mitso.v.homework_20.service.UpdateService;
 import mitso.v.homework_20.support.SupportDetails;
 
+
 public class DetailsActivity extends AppCompatActivity {
 
-    public static boolean       isActivityRunning;
+    public static boolean           isActivityRunning;
 
-    private SupportDetails      mSupport;
+    private SupportDetails          mSupport;
 
-    private Bank                mBank;
+    private DetailsActivityBinding  mBinding;
 
-    private int                 mLayoutWidth;
-    private ShareDialogFragment mShareDialogFragmentFragment;
+    private Bank                    mBank;
+
+    private int                     mLayoutWidth;
+    private ShareDialogFragment     mShareDialogFragmentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +47,11 @@ public class DetailsActivity extends AppCompatActivity {
         final Bundle bundle = getIntent().getExtras();
         mBank = (Bank) bundle.getSerializable(Constants.BANK_BUNDLE_KEY);
 
-        setContentView(R.layout.details_activity);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.details_activity);
         initActionBar();
         initLayout();
-        initViews();
-
-        final LinearLayout linearLayout_Currencies = (LinearLayout) findViewById(R.id.rl_Currencies_AD);
-        mSupport.addCurrenciesToActivityLayout(this, linearLayout_Currencies, mBank.getCurrencies());
+        mBinding.setBank(mBank);
+        mSupport.addCurrenciesToActivityLayout(this, mBinding.llCurrenciesAD, mBank.getCurrencies());
     }
 
     private void initActionBar() {
@@ -71,40 +70,14 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void initLayout() {
 
-        final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.rl_DetailsLayout_AD);
-        if (relativeLayout != null) {
-            relativeLayout.post(new Runnable() {
+        if (mBinding.rlDetailsAD != null) {
+            mBinding.rlDetailsAD.post(new Runnable() {
                 @Override
                 public void run() {
-                    mLayoutWidth = relativeLayout.getWidth();
+                    mLayoutWidth = mBinding.rlDetailsAD.getWidth();
                 }
             });
         }
-    }
-
-    private void initViews() {
-
-        final TextView textView_BankName = (TextView) findViewById(R.id.tv_BankName_AD);
-        final TextView textView_BankRegion = (TextView) findViewById(R.id.tv_BankRegion_AD);
-        final TextView textView_BankCity = (TextView) findViewById(R.id.tv_BankCity_AD);
-        final TextView textView_BankAddress = (TextView) findViewById(R.id.tv_BankAddress_AD);
-        final TextView textView_BankPhone = (TextView) findViewById(R.id.tv_BankPhone_AD);
-        final TextView textView_BankDate = (TextView) findViewById(R.id.tv_BankDate_AD);
-        final TextView textView_BankTime = (TextView) findViewById(R.id.tv_BankTime_AD);
-
-        ifViewNotNullSetText(textView_BankName, mBank.getName());
-        ifViewNotNullSetText(textView_BankRegion, mBank.getRegion());
-        ifViewNotNullSetText(textView_BankCity, mBank.getCity());
-        ifViewNotNullSetText(textView_BankAddress, mBank.getAddress());
-        ifViewNotNullSetText(textView_BankPhone, mBank.getPhone());
-        ifViewNotNullSetText(textView_BankDate, new SimpleDateFormat(Constants.DATE_FORMAT).format(mBank.getDate()));
-        ifViewNotNullSetText(textView_BankTime, new SimpleDateFormat(Constants.TIME_FORMAT).format(mBank.getDate()));
-    }
-
-    private void ifViewNotNullSetText(TextView _textView, String _string) {
-
-        if (_textView != null)
-            _textView.setText(_string);
     }
 
     @Override

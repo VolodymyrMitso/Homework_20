@@ -5,6 +5,10 @@ android {
     buildToolsVersion "23.0.3"
     useLibrary 'org.apache.http.legacy'
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "mitso.v.homework_20"
         minSdkVersion 15

@@ -37,6 +37,14 @@ public class Bank implements Serializable {
         return result;
     }
 
+    public String getFormattedTime() {
+        return new SimpleDateFormat(Constants.TIME_FORMAT).format(date);
+    }
+
+    public String getFormattedDate() {
+        return new SimpleDateFormat(Constants.DATE_FORMAT).format(date);
+    }
+
     @Override
     public boolean equals(Object o) {
 
@@ -50,6 +58,7 @@ public class Bank implements Serializable {
 
     @Override
     public int hashCode() {
+
         int result = getId().hashCode();
         result = 31 * result + getDate().hashCode();
         return result;

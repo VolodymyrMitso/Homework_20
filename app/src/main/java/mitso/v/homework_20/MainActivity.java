@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_Banks_AM);
-        mBankAdapter = new BankAdapter(this, mBankList);
+        mBankAdapter = new BankAdapter(mBankList);
         mRecyclerView.setAdapter(mBankAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         final int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.d_size_17dp);

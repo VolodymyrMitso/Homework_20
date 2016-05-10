@@ -1,6 +1,5 @@
 package mitso.v.homework_20.recycler_view;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,24 +8,22 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import mitso.v.homework_20.R;
 import mitso.v.homework_20.api.models.Bank;
+import mitso.v.homework_20.databinding.BankCardBinding;
 
 public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
 
     private List<Bank>      mBankList;
     private IBankHandler    mBankHandler;
-    private Context         mContext;
 
-    public BankAdapter(Context _context, List<Bank> _bankList) {
-        this.mContext = _context;
+    public BankAdapter(List<Bank> _bankList) {
         this.mBankList = new ArrayList<>(_bankList);
     }
 
     @Override
     public BankViewHolder onCreateViewHolder(ViewGroup _parent, int _viewType) {
-        final View itemView = LayoutInflater.from(_parent.getContext()).inflate(R.layout.bank_card, _parent, false);
-        return new BankViewHolder(itemView);
+        final BankCardBinding binding = BankCardBinding.inflate(LayoutInflater.from(_parent.getContext()), _parent, false);
+        return new BankViewHolder(binding.getRoot());
     }
 
     @Override
@@ -34,34 +31,30 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
 
         final Bank bank = mBankList.get(_position);
 
-        _holder.getTextView_BankName().setText(bank.getName());
-        _holder.getTextView_BankRegion().setText(bank.getRegion());
-        _holder.getTextView_BankCity().setText(bank.getCity());
-        _holder.getTextView_BankPhone().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_phone), bank.getPhone()));
-        _holder.getTextView_BankAddress().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_address), bank.getAddress()));
+        _holder.getBinding().setBank(bank);
 
-        _holder.getImageButton_Link().setOnClickListener(new View.OnClickListener() {
+        _holder.getBinding().setClickerLink(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.goToLink(bank.getLink());
             }
         });
 
-        _holder.getImageButton_Map().setOnClickListener(new View.OnClickListener() {
+        _holder.getBinding().setClickerMap(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.showOnMap(bank.getRegion(), bank.getCity(), bank.getAddress());
             }
         });
 
-        _holder.getImageButton_Phone().setOnClickListener(new View.OnClickListener() {
+        _holder.getBinding().setClickerPhone(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.callPhone(bank.getPhone());
             }
         });
 
-        _holder.getImageButton_Details().setOnClickListener(new View.OnClickListener() {
+        _holder.getBinding().setClickerDetails(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBankHandler.showDetails(bank);
