@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
 //                Log.e(LOG_TAG, mJsonData.print_2());
 //                Log.e(LOG_TAG, mJsonData.print_3());
 
-                mApiBankList = mSupport.getBanksFromData(mJsonData);
+                mApiBankList = mSupport.getBanksFromData(MainActivity.this, mJsonData);
 
                 if (mApiBankList != null) {
                     Log.e(mApiGet.LOG_TAG, "BANKS COUNT : " + String.valueOf(mApiBankList.size()));

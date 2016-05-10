@@ -97,7 +97,7 @@ public class UpdateService extends IntentService {
 //                Log.e(LOG_TAG, mJsonData.print_2());
 //                Log.e(LOG_TAG, mJsonData.print_3());
 
-                    mApiBankList = mSupport.getBanksFromData(mJsonData);
+                    mApiBankList = mSupport.getBanksFromData(getApplicationContext(), mJsonData);
 
                     if (mApiBankList != null) {
                         Log.e(mApiGet.LOG_TAG, String.valueOf(mApiBankList.size()));

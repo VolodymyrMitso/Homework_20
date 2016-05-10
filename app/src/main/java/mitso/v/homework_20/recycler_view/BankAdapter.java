@@ -35,10 +35,7 @@ public class BankAdapter extends RecyclerView.Adapter<BankViewHolder> {
         final Bank bank = mBankList.get(_position);
 
         _holder.getTextView_BankName().setText(bank.getName());
-        if (bank.getRegion().equals(mContext.getResources().getString(R.string.s_capital)))
-            _holder.getTextView_BankRegion().setText(mContext.getResources().getString(R.string.s_region));
-        else
-            _holder.getTextView_BankRegion().setText(bank.getRegion());
+        _holder.getTextView_BankRegion().setText(bank.getRegion());
         _holder.getTextView_BankCity().setText(bank.getCity());
         _holder.getTextView_BankPhone().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_phone), bank.getPhone()));
         _holder.getTextView_BankAddress().setText(String.format("%s%s", mContext.getResources().getString(R.string.s_address), bank.getAddress()));

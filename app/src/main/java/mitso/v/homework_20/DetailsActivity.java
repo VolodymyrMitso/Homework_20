@@ -93,10 +93,7 @@ public class DetailsActivity extends AppCompatActivity {
         final TextView textView_BankTime = (TextView) findViewById(R.id.tv_BankTime_AD);
 
         ifViewNotNullSetText(textView_BankName, mBank.getName());
-        if (mBank.getRegion().equals(getResources().getString(R.string.s_capital)))
-            ifViewNotNullSetText(textView_BankRegion, getResources().getString(R.string.s_region));
-        else
-            ifViewNotNullSetText(textView_BankRegion, mBank.getRegion());
+        ifViewNotNullSetText(textView_BankRegion, mBank.getRegion());
         ifViewNotNullSetText(textView_BankCity, mBank.getCity());
         ifViewNotNullSetText(textView_BankAddress, mBank.getAddress());
         ifViewNotNullSetText(textView_BankPhone, mBank.getPhone());

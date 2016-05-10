@@ -98,6 +98,9 @@ public class SupportDetails {
 
     public LinearLayout createDialogLayout(Context _context, Bank _bank, int _layoutWidth) {
 
+        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                _layoutWidth / 3 * 2, LinearLayout.LayoutParams.WRAP_CONTENT);
+
         final LinearLayout linearLayout = new LinearLayout(_context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setBackgroundColor(_context.getResources().getColor(R.color.c_view_bg));
@@ -109,6 +112,7 @@ public class SupportDetails {
         );
 
         final TextView name = new TextView(_context);
+        name.setLayoutParams(layoutParams);
         name.setTextColor(_context.getResources().getColor(R.color.c_title));
         name.setText(_bank.getName());
         name.setTextSize(21); // !!!
@@ -116,10 +120,7 @@ public class SupportDetails {
 
         final TextView region = new TextView(_context);
         region.setTextColor(_context.getResources().getColor(R.color.c_subtitle));
-        if (_bank.getRegion().equals(_context.getResources().getString(R.string.s_capital)))
-            region.setText(_context.getResources().getString(R.string.s_region));
-        else
-            region.setText(_bank.getRegion());
+        region.setText(_bank.getRegion());
         region.setTextSize(17); // !!!
         region.setGravity(Gravity.START);
 
@@ -129,14 +130,7 @@ public class SupportDetails {
         city.setTextSize(17); // !!!
         city.setGravity(Gravity.START);
 
-        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                _layoutWidth / 3 * 2,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, _context.getResources().getDimensionPixelOffset(R.dimen.d_size_10dp),
-                                0, _context.getResources().getDimensionPixelOffset(R.dimen.d_size_10dp));
-
         final TextView date = new TextView(_context);
-        date.setLayoutParams(layoutParams);
         date.setTextColor(_context.getResources().getColor(R.color.c_title_pink));
         date.setText(new SimpleDateFormat(Constants.DATE_AND_TIME_FORMAT_OUT).format(_bank.getDate()) );
         date.setTextSize(17); // !!!

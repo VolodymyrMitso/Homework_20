@@ -38,16 +38,16 @@ public class SupportMain {
         return ((wifiInfo != null && wifiInfo.isConnected()) || (networkInfo != null && networkInfo.isConnected()));
     }
 
-    public List<Bank> getBanksFromData(JsonData jsonData) {
+    public List<Bank> getBanksFromData(Context _context, JsonData _jsonData) {
 
         List<Bank> banks = new ArrayList<>();
 
-        if (jsonData != null) {
+        if (_jsonData != null) {
 
-            List<JsonOrganization> jsonOrganizations = jsonData.getOrganizations();
-            Map<String, String> currenciesNamesAbbreviations = jsonData.getCurrencies();
-            Map<String, String> regionsNamesIds = jsonData.getRegions();
-            Map<String, String> citiesNamesIds = jsonData.getCities();
+            List<JsonOrganization> jsonOrganizations = _jsonData.getOrganizations();
+            Map<String, String> currenciesNamesAbbreviations = _jsonData.getCurrencies();
+            Map<String, String> regionsNamesIds = _jsonData.getRegions();
+            Map<String, String> citiesNamesIds = _jsonData.getCities();
 
             for (int i = 0; i < jsonOrganizations.size(); i++) {
 
@@ -55,7 +55,12 @@ public class SupportMain {
                 Bank bank = new Bank();
                 bank.setId(jsonOrganization.getId());
                 bank.setName(jsonOrganization.getTitle());
-                bank.setRegion(regionsNamesIds.get(jsonOrganization.getRegionId()));
+
+                if (regionsNamesIds.get(jsonOrganization.getRegionId()).equals(_context.getResources().getString(R.string.s_capital)))
+                    bank.setRegion(_context.getResources().getString(R.string.s_capital_region));
+                else
+                    bank.setRegion(regionsNamesIds.get(jsonOrganization.getRegionId()));
+
                 bank.setCity(citiesNamesIds.get(jsonOrganization.getCityId()));
                 bank.setAddress(jsonOrganization.getAddress());
                 bank.setPhone(jsonOrganization.getPhone());
@@ -74,7 +79,7 @@ public class SupportMain {
                 }
                 bank.setCurrencies(currencies);
 
-                bank.setDate(jsonData.getDate());
+                bank.setDate(_jsonData.getDate());
 
                 banks.add(bank);
             }
